@@ -10,7 +10,11 @@ const TOKEN_PATH = path.join(__dirname, '../config/googleToken.json');
 
 // Ensure config dir exists
 if (!fs.existsSync(path.join(__dirname, '../config'))) {
-  fs.mkdirSync(path.join(__dirname, '../config'), { recursive: true });
+  try {
+    fs.mkdirSync(path.join(__dirname, '../config'), { recursive: true });
+  } catch (e) {
+    console.warn("[GoogleAuth] Could not create config directory (likely read-only filesystem).");
+  }
 }
 
 export function registerGoogleOAuthRoutes(app: Express) {

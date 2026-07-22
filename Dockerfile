@@ -16,7 +16,7 @@ COPY package.json pnpm-lock.yaml ./
 COPY patches/ ./patches/
 RUN pnpm install --frozen-lockfile --prod
 COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/server/config ./server/config
+COPY --from=builder /app/server/config ./config
 EXPOSE 8080
 ENV NODE_ENV=production
 ENV PORT=8080

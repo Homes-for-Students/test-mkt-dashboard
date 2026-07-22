@@ -52,10 +52,14 @@ try {
 }
 
 // Initialize Google Search Console Auth
-const gscAuth = new google.auth.GoogleAuth({
-  keyFile: path.join(__dirname, '../../google-credentials.json'),
-  scopes: ['https://www.googleapis.com/auth/webmasters.readonly'],
-});
+const gscAuth = new google.auth.GoogleAuth(
+  process.env.GOOGLE_APPLICATION_CREDENTIALS
+    ? { scopes: ['https://www.googleapis.com/auth/webmasters.readonly'] }
+    : {
+        keyFile: path.join(__dirname, '../../google-credentials.json'),
+        scopes: ['https://www.googleapis.com/auth/webmasters.readonly'],
+      }
+);
 const searchConsoleClient = google.searchconsole({ version: 'v1', auth: gscAuth });
 
 // Initialize Google Ads Client (Requires explicit credentials in environment)
