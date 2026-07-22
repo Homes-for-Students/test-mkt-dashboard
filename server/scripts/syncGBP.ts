@@ -205,9 +205,5 @@ export async function syncGbpStats(forceSubsetForTesting?: number) {
   console.log('[syncGBP] Sync complete.');
 }
 
-// Allow standalone execution
-if (process.argv[1] && path.resolve(process.argv[1]) === __filename) {
-  const subset = process.argv[2] ? parseInt(process.argv[2], 10) : undefined;
-  syncGbpStats(subset).catch(console.error);
-}
+// Removed standalone execution block as it breaks esbuild bundling.
 

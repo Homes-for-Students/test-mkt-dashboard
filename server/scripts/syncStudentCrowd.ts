@@ -93,10 +93,4 @@ export async function syncStudentCrowdStats() {
   console.log(`[StudentCrowd Sync] Completed. Success: ${successCount}, Failed: ${failCount}`);
 }
 
-// Allow running directly from command line
-if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  syncStudentCrowdStats().then(() => process.exit(0)).catch(err => {
-    console.error(err);
-    process.exit(1);
-  });
-}
+// Removed direct command line execution block as it breaks esbuild bundling.
