@@ -1,0 +1,16 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "marketing-dashboard",
+  "compatibility_date": "2024-03-20",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "main": "dist/index.js",
+  "observability": {
+    "enabled": true
+  },
+  "assets": {
+    "directory": "./dist/public",
+    "not_found_handling": "single-page-application"
+  }
+}
