@@ -11,8 +11,11 @@ export async function setupVite(app: Express, server: Server) {
     allowedHosts: true as const,
   };
 
-  const { createServer: createViteServer } = await import("vite");
-  const viteConfig = (await import("../../vite.config")).default;
+  const viteModule = "vite";
+  const { createServer: createViteServer } = await import(/* @vite-ignore */ viteModule);
+  
+  const configModule = "../../vite.config";
+  const viteConfig = (await import(/* @vite-ignore */ configModule)).default;
 
   const vite = await createViteServer({
     ...viteConfig,
