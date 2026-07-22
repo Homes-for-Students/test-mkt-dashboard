@@ -40,6 +40,7 @@ if (!GOOGLE_REFRESH_TOKEN && fs.existsSync(tokenPath)) {
 }
 
 // Caching and Concurrency
+// Note: cache clears on container restart
 const cache = new NodeCache({ stdTTL: 3600 }); // 1 hour cache to protect quotas
 const limit = pLimit(5); // max 5 concurrent API requests to Google
 
