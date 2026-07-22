@@ -1,0 +1,78 @@
+{
+  "city living": {
+    "brand": "City Living",
+    "backgroundColor": "#0b5f62",
+    "secondaryColor": "#158b8f",
+    "textColor": "#ffffff"
+  },
+  "gradpad": {
+    "brand": "GradPad",
+    "fullName": "Gradpad London",
+    "backgroundColor": "#8B0000",
+    "secondaryColor": "#b6163b",
+    "textColor": "#ffffff"
+  },
+  "esl": {
+    "brand": "ESL",
+    "fullName": "Essential Student Living",
+    "backgroundColor": "#00ccbb",
+    "secondaryColor": "#00998c",
+    "textColor": "#ffffff"
+  },
+  "evo": {
+    "brand": "EVO",
+    "fullName": "EVO Student",
+    "backgroundColor": "#1d1d1d",
+    "secondaryColor": "#cc9b2f",
+    "textColor": "#d6a62c"
+  },
+  "usl": {
+    "brand": "USL",
+    "fullName": "Urban Student Life",
+    "backgroundColor": "#870043",
+    "textColor": "#ffffff"
+  },
+  "uvsl": {
+    "brand": "UVSL",
+    "fullName": "Universal Student Living",
+    "backgroundColor": "#3196b8",
+    "secondaryColor": "#1b627a",
+    "textColor": "#ffffff"
+  },
+  "hfs": {
+    "brand": "HFS",
+    "fullName": "Homes for Students",
+    "backgroundColor": "#f58524",
+    "textColor": "#ffffff"
+  },
+  "psl": {
+    "brand": "PSL",
+    "fullName": "Prestige Student Living",
+    "backgroundColor": "#532c3d",
+    "secondaryColor": "#008d89",
+    "textColor": "#ffffff"
+  },
+  "uksh": {
+    "brand": "UKSH",
+    "fullName": "UK Student Houses",
+    "backgroundColor": "#0f4c81",
+    "textColor": "#ffffff"
+  },
+  "new build test": {
+    "brand": "new build test",
+    "backgroundColor": "#888d91",
+    "textColor": "#ffffff"
+  },
+  "ttt": {
+    "brand": "TTT",
+    "fullName": "Test Test Test",
+    "backgroundColor": "#f58524",
+    "textColor": "#ffffff"
+  },
+  "test": {
+    "brand": "TEST",
+    "fullName": "",
+    "backgroundColor": "#ffc2c2",
+    "textColor": "#ffffff"
+  }
+}

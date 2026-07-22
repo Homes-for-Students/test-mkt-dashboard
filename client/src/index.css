@@ -1,0 +1,282 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Map brand colors to Tailwind font and color utility classes */
+  --font-sans: var(--font);
+  --font-title: var(--title);
+  
+  --color-orange: var(--orange);
+  --color-turquoise: var(--turquoise);
+  --color-primary-dark: var(--primary-dark);
+  --color-primary-light: var(--primary-light);
+  --color-red: var(--red);
+  --color-a11y-focus: var(--color-a11y-focus);
+
+  /* Overwrite tailwind blue colors with brand primary orange colors */
+  --color-blue-50: #fdf2e9;
+  --color-blue-100: #fbcea8;
+  --color-blue-200: #ffd0a8;
+  --color-blue-300: #fbcea8;
+  --color-blue-500: #f58524;
+  --color-blue-600: #f58524;
+  --color-blue-700: #f07111;
+  --color-blue-800: #d95d00;
+  --color-blue-900: #9c4100;
+}
+
+:root {
+  /* Brand Color Palette variables from screenshot */
+  --primary: #f58524;
+  --orange: var(--primary);
+  --primary-dark: #f07111;
+  --primary-light: #fbcea8;
+  --secondary: #71b6b8;
+  --turquoise: var(--secondary);
+  --red: #ff6363;
+  --color-a11y-focus: #2053a3;
+
+  /* Brand Fonts from screenshot */
+  --title: "Poppins", system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif;
+  --font: "Nunito Sans", "NunitoSans", system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif;
+
+  /* Dashboard Customization */
+  --primary-foreground: #ffffff;
+  --sidebar-primary: var(--primary);
+  --sidebar-primary-foreground: var(--primary-foreground);
+  --chart-1: #f58524;
+  --chart-2: #71b6b8;
+  --chart-3: #f07111;
+  --chart-4: #fbcea8;
+  --chart-5: #2053a3;
+  
+  --radius: 1rem; 
+  --background: oklch(0.99 0.003 240); 
+  --foreground: oklch(0.235 0.015 65);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.235 0.015 65);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.235 0.015 65);
+  --secondary-foreground: oklch(0.4 0.015 65);
+  --muted: oklch(0.967 0.001 286.375);
+  --muted-foreground: oklch(0.552 0.016 285.938);
+  --accent: oklch(0.967 0.001 286.375);
+  --accent-foreground: oklch(0.141 0.005 285.823);
+  --destructive: var(--red);
+  --destructive-foreground: oklch(0.985 0 0);
+  --border: oklch(0.95 0.004 240); 
+  --input: oklch(0.95 0.004 240);
+  --ring: var(--color-a11y-focus);
+  
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.235 0.015 65);
+  --sidebar-accent: oklch(0.967 0.001 286.375);
+  --sidebar-accent-foreground: oklch(0.141 0.005 285.823);
+  --sidebar-border: oklch(0.95 0.004 240);
+  --sidebar-ring: var(--color-a11y-focus);
+}
+
+.dark {
+  --primary: #f58524;
+  --primary-foreground: #ffffff;
+  --sidebar-primary: #f58524;
+  --sidebar-primary-foreground: #ffffff;
+  
+  --chart-1: #f58524;
+  --chart-2: #71b6b8;
+  --chart-3: #f07111;
+  --chart-4: #fbcea8;
+  --chart-5: #2053a3;
+
+  --background: oklch(0.141 0.005 285.823);
+  --foreground: oklch(0.85 0.005 65);
+  --card: oklch(0.21 0.006 285.885);
+  --card-foreground: oklch(0.85 0.005 65);
+  --popover: oklch(0.21 0.006 285.885);
+  --popover-foreground: oklch(0.85 0.005 65);
+  --secondary: oklch(0.24 0.006 286.033);
+  --secondary-foreground: oklch(0.7 0.005 65);
+  --muted: oklch(0.274 0.006 286.033);
+  --muted-foreground: oklch(0.705 0.015 286.067);
+  --accent: oklch(0.274 0.006 286.033);
+  --accent-foreground:  oklch(0.92 0.005 65);
+  --destructive: var(--red);
+  --destructive-foreground: oklch(0.985 0 0);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: var(--color-a11y-focus);
+  --sidebar: oklch(0.21 0.006 285.885);
+  --sidebar-foreground: oklch(0.85 0.005 65);
+  --sidebar-accent: oklch(0.274 0.006 286.033);
+  --sidebar-accent-foreground:  oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: var(--color-a11y-focus);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+    font-family: var(--font);
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  ::selection {
+    @apply bg-slate-200 text-slate-900;
+  }
+  .dark ::selection {
+    @apply bg-slate-700 text-slate-100;
+  }
+  h1, h2, h3, h4, h5, h6,
+  [data-slot="card-title"] {
+    font-family: var(--title);
+  }
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  [type="button"]:not(:disabled),
+  [type="submit"]:not(:disabled),
+  [type="reset"]:not(:disabled),
+  a[href],
+  select:not(:disabled),
+  input[type="checkbox"]:not(:disabled),
+  input[type="radio"]:not(:disabled) {
+    @apply cursor-pointer;
+  }
+}
+
+@layer components {
+  .container {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .flex {
+    min-height: 0;
+    min-width: 0;
+  }
+
+  @media (min-width: 640px) {
+    .container {
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .container {
+      padding-left: 2rem;
+      padding-right: 2rem;
+      max-width: 1280px;
+    }
+  }
+
+  /* Fade-in Animation */
+  .animate-fade-in {
+    animation: fadeIn 0.3s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Global Brand Badge Styles */
+  .brand-badge {
+    @apply px-2.5 py-0.5 rounded-full text-xs font-semibold border border-transparent whitespace-nowrap inline-block text-center;
+  }
+  .brand-city-living {
+    background-color: #0b5f62;
+    color: white;
+  }
+  .brand-gradpad {
+    background-color: #8B0000;
+    color: white;
+  }
+  .brand-esl {
+    background-color: #00ccbb;
+    color: white;
+  }
+  .brand-evo {
+    background-color: #1d1d1d;
+    color: #d6a62c;
+  }
+  .brand-usl {
+    background-color: #870043;
+    color: white;
+  }
+  .brand-uvsl {
+    background-color: #3196b8;
+    color: white;
+  }
+  .brand-hfs {
+    background-color: #f58524;
+    color: white;
+  }
+  .brand-psl {
+    background-color: #532c3d;
+    color: white;
+  }
+  .brand-default {
+    @apply bg-slate-100 text-slate-700 border-slate-200;
+  }
+
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Hide scrollbar for IE, Edge and Firefox */
+  .scrollbar-hide {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+}
