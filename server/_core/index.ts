@@ -42,7 +42,7 @@ async function startServer() {
 
   // CORS: allow cross-origin requests from the Cloudflare Pages frontend
   app.use(cors({
-    origin: process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(",") : true,
+    origin: true,
     credentials: true
   }));
 
