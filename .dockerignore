@@ -10,7 +10,6 @@ google-credentials.json
 .manus-logs
 .webdev
 dist
-client/src
 client/public/__manus__
 drizzle
 *.zip
