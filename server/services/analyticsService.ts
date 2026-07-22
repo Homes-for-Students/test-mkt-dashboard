@@ -1021,13 +1021,15 @@ export class AnalyticsService {
 
           } catch (err: any) {
              console.warn(`[AnalyticsService] GA4 query failed for ${propertyId}:`, err.message);
+             fallback.engagementData = [{ date: `GA4 ERROR (${propertyId}): ` + err.message, bounceRate: 0, sessionDuration: 0 }];
           }
         }
       }
 
       return fallback; 
-    } catch (err) {
-      console.warn('[AnalyticsService] GA4 API fetch failed (likely ADC missing). Using dynamic mock fallback.', (err as Error).message);
+    } catch (err: any) {
+      console.warn('[AnalyticsService] GA4 API fetch failed (likely ADC missing). Using dynamic mock fallback.', err.message);
+      fallback.engagementData = [{ date: 'GA4 ERROR: ' + err.message, bounceRate: 0, sessionDuration: 0 }];
       return fallback;
     }
   }
