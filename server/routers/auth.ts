@@ -64,23 +64,38 @@ export const authRouter = router({
     }),
   
   debugUsers: publicProcedure.query(async () => {
-    // This is temporary to diagnose the login failure
-    const db = await import("../db").then(m => m.getDb());
-    if (!db) {
-      return { connected: false, message: "Database is not connected. Falling back to mock." };
+    try {
+      const dbUrl = process.env.DATABASE_URL;
+      if (!dbUrl) return { connected: false, error: "DATABASE_URL is not set in environment variables." };
+      
+      const db = await import("../db").then(m => m.getDb());
+      if (!db) {
+        // We will do a raw test just to capture the exact error message
+        const mysql = await import("mysql2/promise");
+        try {
+          const conn = await mysql.createConnection(dbUrl);
+          await conn.end();
+          return { connected: false, error: "getDb() returned null but raw test succeeded. Strange." };
+        } catch (rawError: any) {
+          return { connected: false, error: rawError.message, code: rawError.code, stack: rawError.stack };
+        }
+      }
+      
+      const { users } = await import("../../drizzle/schema");
+      const allUsers = await db.select().from(users);
+      return {
+        connected: true,
+        users: allUsers.map(u => ({
+          id: u.id,
+          email: u.email,
+          passwordHashLength: u.password?.length,
+          passwordHashStart: u.password?.substring(0, 10),
+          role: u.role,
+        })),
+      };
+    } catch (e: any) {
+      return { connected: false, error: e.message, code: e.code };
     }
-    const { users } = await import("../../drizzle/schema");
-    const allUsers = await db.select().from(users);
-    return {
-      connected: true,
-      users: allUsers.map(u => ({
-        id: u.id,
-        email: u.email,
-        passwordHashLength: u.password?.length,
-        passwordHashStart: u.password?.substring(0, 10),
-        role: u.role,
-      })),
-    };
   }),
 
   logout: publicProcedure.mutation(({ ctx }) => {
