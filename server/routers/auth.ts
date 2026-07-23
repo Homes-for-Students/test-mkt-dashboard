@@ -98,18 +98,56 @@ export const authRouter = router({
           console.error("Missing RESEND_API_KEY environment variable");
         } else {
           const fromEmail = process.env.RESEND_FROM_EMAIL || "onboarding@resend.dev";
+          const templateId = process.env.RESEND_TEMPLATE_ID;
+          
+          const payload: Record<string, any> = {
+            from: `HFS Dashboard <${fromEmail}>`,
+            to: user.email,
+            subject: "Your Dashboard Login Code"
+          };
+
+          if (templateId) {
+            // Use Resend dashboard template if provided
+            payload.template = {
+              id: templateId,
+              variables: {
+                otpCode: otpCode
+              }
+            };
+          } else {
+            // Local HTML email template fallback
+            payload.text = `Your One-Time Passcode is: ${otpCode}\n\nThis code will expire in 10 minutes.\nIf you did not request this, please ignore this email.`;
+            payload.html = `
+              <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f8fafc; padding: 40px 20px; text-align: center;">
+                <div style="max-width: 480px; margin: 0 auto; background-color: #ffffff; border: 1px solid #e2e8f0; border-top: 4px solid #f58524; border-radius: 16px; padding: 40px; text-align: left; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
+                  <div style="text-align: center; margin-bottom: 32px;">
+                    <h2 style="color: #0f172a; margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -0.5px;">Homes for Students</h2>
+                    <p style="color: #f58524; margin: 4px 0 0 0; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">Reporting Dashboard</p>
+                  </div>
+                  
+                  <h3 style="color: #0f172a; font-size: 18px; font-weight: 700; margin-bottom: 16px; margin-top: 0;">Verification Code</h3>
+                  <p style="color: #475569; font-size: 14px; line-height: 24px; margin-bottom: 24px;">Please use the following 6-digit passcode to sign into your HFS Performance Dashboard. This passcode is valid for the next <strong>10 minutes</strong>.</p>
+                  
+                  <div style="background-color: #fff7ed; border-radius: 12px; padding: 18px; text-align: center; margin-bottom: 24px; border: 1px dashed #f58524;">
+                    <span style="font-family: monospace; font-size: 32px; font-weight: 800; letter-spacing: 8px; color: #f58524; margin-left: 8px;">${otpCode}</span>
+                  </div>
+                  
+                  <p style="color: #94a3b8; font-size: 11px; line-height: 18px; margin-bottom: 0; border-top: 1px solid #f1f5f9; padding-top: 16px;">If you did not request this, you can safely ignore this email. Someone may have entered your email by mistake.</p>
+                </div>
+                <div style="margin-top: 24px; text-align: center;">
+                  <p style="color: #94a3b8; font-size: 11px; margin: 0;">&copy; 2026 Homes for Students. All rights reserved.</p>
+                </div>
+              </div>
+            `;
+          }
+
           const res = await fetch("https://api.resend.com/emails", {
             method: "POST",
             headers: {
               "Authorization": `Bearer ${resendApiKey}`,
               "Content-Type": "application/json"
             },
-            body: JSON.stringify({
-              from: `HFS Dashboard <${fromEmail}>`,
-              to: user.email,
-              subject: "Your Dashboard Login Code",
-              text: `Your One-Time Passcode is: ${otpCode}\n\nThis code will expire in 10 minutes.\nIf you did not request this, please ignore this email.`
-            })
+            body: JSON.stringify(payload)
           });
           
           if (!res.ok) {
