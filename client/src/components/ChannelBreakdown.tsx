@@ -298,9 +298,9 @@ export default function ChannelBreakdown({
       {/* Executive Performance Metrics */}
       <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-6">
         {/* Sales (week) */}
-        <div className="col-span-1 p-5 rounded-2xl bg-white border border-slate-100/80 shadow-[0_8px_30px_rgb(0,0,0,0.015)] hover:shadow-[0_12px_40px_rgba(0,0,0,0.02)] transition-all flex flex-col justify-start md:justify-between h-full">
+        <div className="col-span-1 p-4 sm:p-5 rounded-2xl bg-white border border-slate-100/80 shadow-[0_8px_30px_rgb(0,0,0,0.015)] hover:shadow-[0_12px_40px_rgba(0,0,0,0.02)] transition-all flex flex-col justify-start md:justify-between h-full">
           <div className="flex items-center justify-between w-full">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+            <span className="text-[10px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1 sm:gap-1.5">
               Sales (week)
               <SectionHelp text="Weekly updates on sales figures and occupancy levels, refreshed every Friday afternoon/Monday morning." />
             </span>
@@ -310,7 +310,7 @@ export default function ChannelBreakdown({
           </div>
           <div className="mt-1.5">
             <div className="flex items-baseline gap-2">
-              <span className="text-xl font-bold text-slate-900 leading-tight">
+              <span className="text-base sm:text-lg md:text-xl font-bold text-slate-900 leading-tight">
                 {formatNumber(salesWeek)} {salesWeek === 1 ? 'room' : 'rooms'}
               </span>
             </div>
@@ -319,9 +319,9 @@ export default function ChannelBreakdown({
         </div>
 
         {/* Total Sales */}
-        <div className="col-span-1 p-5 rounded-2xl bg-white border border-slate-100/80 shadow-[0_8px_30px_rgb(0,0,0,0.015)] hover:shadow-[0_12px_40px_rgba(0,0,0,0.02)] transition-all flex flex-col justify-start md:justify-between h-full">
+        <div className="col-span-1 p-4 sm:p-5 rounded-2xl bg-white border border-slate-100/80 shadow-[0_8px_30px_rgb(0,0,0,0.015)] hover:shadow-[0_12px_40px_rgba(0,0,0,0.02)] transition-all flex flex-col justify-start md:justify-between h-full">
           <div className="flex items-center justify-between w-full">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+            <span className="text-[10px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1 sm:gap-1.5">
               Total Sales
               <SectionHelp text="Weekly updates on sales figures and occupancy levels, refreshed every Friday afternoon/Monday morning." />
             </span>
@@ -330,12 +330,12 @@ export default function ChannelBreakdown({
             </div>
           </div>
           <div className="mt-1.5">
-            <div className="flex items-baseline gap-2">
-              <span className="text-xl font-bold text-slate-900 leading-tight">
+            <div className="flex flex-wrap items-baseline gap-1 sm:gap-2">
+              <span className="text-base sm:text-lg md:text-xl font-bold text-slate-900 leading-tight">
                 {formatNumber(totalSales)} {totalSales === 1 ? 'room' : 'rooms'}
               </span>
               {liveData?.executiveStats.totalSalesGrowth !== undefined && (
-                <span className={`text-[12px] font-bold px-1.5 py-0.5 rounded-md border ${liveData.executiveStats.totalSalesGrowth >= 0
+                <span className={`text-[10px] sm:text-xs font-bold px-1 py-0.5 rounded-md border ${liveData.executiveStats.totalSalesGrowth >= 0
                   ? 'bg-emerald-50 text-emerald-700 border-emerald-100'
                   : 'bg-rose-50 text-rose-700 border-rose-100'
                   }`}>
@@ -348,9 +348,9 @@ export default function ChannelBreakdown({
         </div>
 
         {/* Occupancy % */}
-        <div className="col-span-2 md:col-span-1 p-5 rounded-2xl bg-white border border-slate-100/80 shadow-[0_8px_30px_rgb(0,0,0,0.015)] hover:shadow-[0_12px_40px_rgba(0,0,0,0.02)] transition-all flex flex-col justify-start md:justify-between h-full">
+        <div className="col-span-2 md:col-span-1 p-4 sm:p-5 rounded-2xl bg-white border border-slate-100/80 shadow-[0_8px_30px_rgb(0,0,0,0.015)] hover:shadow-[0_12px_40px_rgba(0,0,0,0.02)] transition-all flex flex-col justify-start md:justify-between h-full">
           <div className="flex items-center justify-between w-full">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+            <span className="text-[10px] sm:text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1 sm:gap-1.5">
               Occupancy %
               <SectionHelp text="Weekly updates on sales figures and occupancy levels, refreshed every Friday afternoon/Monday morning." />
             </span>
@@ -360,9 +360,17 @@ export default function ChannelBreakdown({
           </div>
           <div className="mt-1.5">
             <div className="flex items-baseline gap-2">
-              <span className="text-xl font-bold text-slate-900 leading-tight">
+              <span className="text-base sm:text-lg md:text-xl font-bold text-slate-900 leading-tight">
                 {occupancyRate.toFixed(1)}%
               </span>
+              {liveData?.executiveStats.occupancyGrowth !== undefined && (
+                <span className={`text-[10px] sm:text-xs font-bold px-1 py-0.5 rounded-md border ${liveData.executiveStats.occupancyGrowth >= 0
+                  ? 'bg-emerald-50 text-emerald-700 border-emerald-100'
+                  : 'bg-rose-50 text-rose-700 border-rose-100'
+                  }`}>
+                  {liveData.executiveStats.occupancyGrowth > 0 ? '+' : ''}{liveData.executiveStats.occupancyGrowth.toFixed(1)}%
+                </span>
+              )}
             </div>
             <span className="text-xs text-slate-400 block mt-1.5"></span>
           </div>
@@ -611,7 +619,7 @@ Avg. CPC (average cost per click) - how much it costs each time a user clicks on
         <Card className="border-slate-100/80 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.015)] rounded-2xl overflow-hidden flex flex-col relative py-0 gap-0">
           <CardHeader className="p-5 pb-3 border-b border-slate-100">
             <div className="mb-4">
-              <CardTitle className="text-xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
+              <CardTitle className="text-base sm:text-xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
                 <Layers2 className="h-5 w-5 text-slate-700" />
                 Deep Dive Analytics
               </CardTitle>

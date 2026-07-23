@@ -114,7 +114,7 @@ export default function DashboardHeader({
   const brandsList = ['All Brands', ...activeBrands];
 
   return (
-    <header className="sticky top-0 z-40 flex flex-row min-h-[4rem] h-auto w-full items-center justify-between gap-3 border-b border-slate-100 bg-white/70 px-4 sm:px-6 py-0 backdrop-blur-xl transition-all">
+    <header className="sticky top-0 z-40 flex flex-row min-h-[4rem] h-auto w-full items-center justify-between gap-3 border-b border-slate-100 bg-white/70 px-5 sm:px-6 py-0 backdrop-blur-xl transition-all">
       {/* Left Section: Hamburger (mobile) + Branding + Client Switcher */}
       <div className="flex items-center gap-2 sm:gap-4">
         {/* Hamburger — mobile only, only for internal dashboard */}
@@ -127,17 +127,17 @@ export default function DashboardHeader({
             <Menu className="h-5 w-5" />
           </button>
         )}
-        <div className="flex items-center gap-2 min-w-0 overflow-hidden">
-          <img src="/logo.png" alt="Logo" className="h-6 sm:h-8 w-auto object-contain rounded-sm shrink-0" />
+        <div className="flex items-center gap-2 shrink-0">
+          <img src="/logo.png" alt="Logo" className="h-6 w-auto object-contain shrink-0 px-1" />
           <div className="flex flex-col min-w-0 overflow-hidden">
-            <h1 className="hidden md:block text-sm font-semibold tracking-tight text-slate-900 truncate">
+            <h1 className="hidden lg:block text-sm font-semibold tracking-tight text-slate-900 truncate">
               {isShared && clientName ? `${clientName}` : (isShared && selectedBrand && selectedBrand !== 'All Brands' ? displayBrandName : 'HFS Central Marketing')}
             </h1>
             <span className="hidden lg:block text-[10px] font-medium text-slate-400 uppercase tracking-wider">Digital Marketing Report Hub</span>
           </div>
         </div>
 
-        <div className="hidden md:block h-6 w-[1px] bg-slate-100" />
+        <div className="hidden lg:block h-6 w-[1px] bg-slate-100" />
 
         {/* Active Preset Badge */}
         {activePresetName && (
@@ -150,14 +150,15 @@ export default function DashboardHeader({
           </>
         )}
 
-        {/* Client Switcher (hidden on mobile + tablet, shown lg+) */}
+        {/* Client Switcher (always visible, displaying full text on desktop and an icon on mobile/tablet) */}
         {!isShared && (
-          <div className="hidden lg:block">
+          <div className="block">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="flex items-center gap-1.5 h-8 px-2.5 rounded-md text-xs font-medium text-slate-600 hover:bg-slate-50">
-                  <span className="font-semibold text-slate-800">{displayBrandName}</span>
-                  <ChevronDown className="h-3 w-3 text-slate-400" />
+                <Button variant="ghost" size="sm" className="flex items-center gap-1.5 h-9 lg:h-8 px-2 lg:px-2.5 rounded-md border border-slate-200 lg:border-0 text-xs font-medium text-slate-600 hover:bg-slate-50">
+                  <Building2 className="h-4 w-4 text-slate-500 lg:hidden" />
+                  <span className="hidden lg:inline font-semibold text-slate-800">{displayBrandName}</span>
+                  <ChevronDown className="hidden lg:inline h-3 w-3 text-slate-400" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start" className="w-56 rounded-md border-slate-100 p-1.5 max-h-64 overflow-y-auto shadow-md">
@@ -262,14 +263,14 @@ export default function DashboardHeader({
           <Dialog open={isUserManagementOpen} onOpenChange={setIsUserManagementOpen}>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="flex items-center gap-2 h-9 px-3 rounded-md border border-slate-200 bg-white hover:bg-slate-50">
-                  <div className="w-5 h-5 rounded-full bg-slate-100 flex items-center justify-center text-xs font-semibold text-slate-700 uppercase">
+                <Button variant="ghost" size="sm" className="flex items-center justify-center lg:justify-start gap-2 h-9 w-9 lg:w-auto px-0 lg:px-3 rounded-full lg:rounded-md border-0 lg:border border-transparent lg:border-slate-200 bg-slate-100 lg:bg-white hover:bg-slate-200 lg:hover:bg-slate-50 shadow-none lg:shadow-xs focus-visible:ring-0 shrink-0">
+                  <div className="w-5 h-5 rounded-full bg-transparent lg:bg-slate-100 flex items-center justify-center text-xs font-semibold text-slate-700 uppercase shrink-0">
                     {user.name?.[0] || user.email?.[0] || 'U'}
                   </div>
-                  <span className="hidden md:inline text-xs font-medium text-slate-700 truncate max-w-[100px]">
+                  <span className="hidden lg:inline text-xs font-medium text-slate-700 truncate max-w-[100px]">
                     {user.name || user.email}
                   </span>
-                  <ChevronDown className="h-3 w-3 text-slate-400" />
+                  <ChevronDown className="hidden lg:inline h-3 w-3 text-slate-400" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56 rounded-md border-slate-100 p-1.5 shadow-md">
@@ -295,11 +296,11 @@ export default function DashboardHeader({
               </DropdownMenuContent>
             </DropdownMenu>
 
-            <DialogContent className="sm:max-w-3xl rounded-xl border-slate-200 bg-white shadow-2xl p-5">
+            <DialogContent className="w-[calc(100%-2rem)] sm:max-w-3xl rounded-xl border-slate-200 bg-white shadow-2xl p-5 overflow-hidden">
               <DialogHeader className="border-b border-slate-100 pb-3">
                 <DialogTitle className="text-base font-bold text-slate-900">Internal user management</DialogTitle>
               </DialogHeader>
-              <div className="">
+              <div className="w-full min-w-0 overflow-hidden">
                 <UserManagement />
               </div>
             </DialogContent>

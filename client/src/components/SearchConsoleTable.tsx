@@ -172,21 +172,40 @@ export default function SearchConsoleTable({
     }
   };
 
+  const handleCsvExport = () => {
+    exportToCsv(allFilteredQueries.map((item: any) => ({
+      'Search Query': item.searchTerm,
+      'Impressions': item.impressions,
+      'Clicks': item.clicks,
+      'CTR': `${item.ctr.toFixed(2)}%`,
+      'Avg Position': item.position.toFixed(1)
+    })), 'Search-Console-Queries', csvMetadata);
+  };
+
   return (
     <Card id="search-console-table-card" className="group/card border-slate-100/80 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.015)] rounded-2xl overflow-hidden h-full flex flex-col justify-between relative bg-white">
       <CardHeader className="p-5 pb-3">
-        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-          <div className="flex-1 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div>
-              <CardTitle className="text-base font-bold text-slate-900 tracking-tight flex items-center gap-2">
-                <ScanSearch className="h-4.5 w-4.5 text-slate-800 shrink-0" />
-                Google Search Console Queries
+        <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
+          <div className="flex-1 flex flex-col items-start lg:flex-row lg:items-center justify-between gap-4">
+            <div className="w-full lg:w-auto">
+              <CardTitle className="text-sm sm:text-base font-bold text-slate-900 tracking-tight flex items-center justify-between lg:justify-start gap-2 w-full">
+                <span className="flex items-center gap-2">
+                  <ScanSearch className="h-4.5 w-4.5 text-slate-800 shrink-0" />
+                  Google Search Console Queries
+                </span>
+                <div className="lg:hidden shrink-0">
+                  <ExportButtonGroup
+                    csvOnly={true}
+                    onExportJpeg={() => { }}
+                    onExportCsv={handleCsvExport}
+                  />
+                </div>
               </CardTitle>
-              <CardDescription className="text-xs text-slate-400 font-medium mt-1">
+              <CardDescription className="text-xs text-slate-400 font-medium mt-1 hidden sm:block">
                 Organic search performance directly from Google Search Console
               </CardDescription>
             </div>
-            
+
             {/* Quick Stats Summary */}
             {!compact && (
               <div className="flex flex-wrap items-center gap-2 md:gap-4 text-xs font-medium text-slate-500 bg-slate-50/60 p-2 rounded-xl border border-slate-100">
@@ -217,7 +236,7 @@ export default function SearchConsoleTable({
       </CardHeader>
 
       <CardContent className="p-5 pt-0 flex-1">
-        <div className="flex flex-col sm:flex-row gap-3 mt-0 mb-4 items-center justify-between">
+        <div className="flex flex-col sm:flex-row gap-3 mt-0 mb-4 items-left justify-between">
           {showSearch ? (
             <div className="relative flex-1 max-w-sm">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-slate-400" />
@@ -228,24 +247,16 @@ export default function SearchConsoleTable({
                   setSearchTerm(e.target.value);
                   setCurrentPage(1);
                 }}
-                className="pl-9 bg-white"
+                className="pl-9 bg-white text-xs sm:text-sm placeholder:text-xs"
               />
             </div>
           ) : (
             <div className="flex-1"></div>
           )}
-          <div className="shrink-0">
+          <div className="hidden lg:block shrink-0">
             <ExportButtonGroup
-              onExportJpeg={() => {}}
-              onExportCsv={() => {
-                exportToCsv(allFilteredQueries.map((item: any) => ({
-                  'Search Query': item.searchTerm,
-                  'Impressions': item.impressions,
-                  'Clicks': item.clicks,
-                  'CTR': `${item.ctr.toFixed(2)}%`,
-                  'Avg Position': item.position.toFixed(1)
-                })), 'Search-Console-Queries', csvMetadata)
-              }}
+              onExportJpeg={() => { }}
+              onExportCsv={handleCsvExport}
               csvOnly={true}
             />
           </div>

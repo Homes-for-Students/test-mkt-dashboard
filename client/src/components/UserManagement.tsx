@@ -53,11 +53,11 @@ export default function UserManagement() {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-row items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <p className="text-[11px] text-slate-500">Add or remove users and manage their access roles.</p>
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-slate-50 text-[11px] hover:bg-slate-100 text-slate-700 border border-slate-200 rounded-sm font-medium px-4 h-7 shadow-xs">
+            <Button className="bg-slate-50 text-[11px] hover:bg-slate-100 text-slate-700 border border-slate-200 rounded-sm font-medium px-4 h-7 shadow-xs w-fit">
               + Create new user
             </Button>
           </DialogTrigger>
@@ -112,7 +112,7 @@ export default function UserManagement() {
         </Dialog>
       </div>
 
-      <div className="border border-slate-100 rounded-xl overflow-hidden bg-white shadow-xs">
+      <div className="border border-slate-100 rounded-xl overflow-x-auto w-full bg-white shadow-xs">
         <Table>
           <TableHeader className="bg-slate-50/70">
             <TableRow>

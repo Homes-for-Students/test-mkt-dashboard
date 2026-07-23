@@ -115,29 +115,31 @@ export default function GoogleAdsTable({
     );
   };
 
+  const handleCsvExport = () => {
+    exportToCsv(filteredAndSortedData.map(item => ({
+      'Search Term': item.searchTerm,
+      'Spend': `£${item.spend.toFixed(2)}`,
+      'Clicks': item.clicks,
+      'Impressions': item.impressions,
+      'CTR': `${item.ctr.toFixed(2)}%`,
+      'Avg CPC': `£${item.cpc.toFixed(2)}`
+    })), 'Google-Ads-Search-Terms', csvMetadata);
+  };
+
   return (
     <Card id="google-ads-table-card" className={hideHeader ? "group/card flex flex-col relative py-0 gap-0 border-none shadow-none" : "group/card border-slate-100/80 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.015)] rounded-2xl overflow-hidden h-full flex flex-col justify-between relative bg-white py-0 gap-0"}>
       {!hideHeader && (
         <CardHeader className="p-5 pb-3">
           <div className="flex flex-col gap-1.5">
             <div className="flex items-start justify-between gap-3">
-              <CardTitle className="text-base font-bold text-slate-900 tracking-tight flex items-start sm:items-center gap-2">
+              <CardTitle className="text-sm sm:text-base font-bold text-slate-900 tracking-tight flex items-start sm:items-center gap-2">
                 <Target className="h-4.5 w-4.5 text-blue-600 shrink-0 mt-0.5 sm:mt-0" />
                 <span className="leading-tight">Google Ads Search Terms</span>
               </CardTitle>
-              <div className="shrink-0">
+              <div className="shrink-0 md:hidden">
                 <ExportButtonGroup
                   onExportJpeg={() => { }}
-                  onExportCsv={() => {
-                    exportToCsv(filteredAndSortedData.map(item => ({
-                      'Search Term': item.searchTerm,
-                      'Spend': `£${item.spend.toFixed(2)}`,
-                      'Clicks': item.clicks,
-                      'Impressions': item.impressions,
-                      'CTR': `${item.ctr.toFixed(2)}%`,
-                      'Avg CPC': `£${item.cpc.toFixed(2)}`
-                    })), 'Google-Ads-Search-Terms', csvMetadata)
-                  }}
+                  onExportCsv={handleCsvExport}
                   csvOnly={true}
                 />
               </div>
@@ -150,8 +152,8 @@ export default function GoogleAdsTable({
       )}
       <CardContent className="p-5 pt-0 flex-1">
         {!compact && showSearch && (
-          <div className="flex flex-col sm:flex-row gap-3 mt-0 mb-4 items-center justify-between">
-            <div className="relative flex-1 max-w-sm">
+          <div className="flex flex-col md:flex-row gap-3 mt-0 mb-4 items-center justify-between">
+            <div className="relative flex-grow max-w-sm w-full">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-slate-400" />
               <Input
                 placeholder="Filter search terms..."
@@ -160,7 +162,14 @@ export default function GoogleAdsTable({
                   setSearchTerm(e.target.value);
                   setCurrentPage(1);
                 }}
-                className="pl-9 bg-white"
+                className="pl-9 bg-white text-xs sm:text-sm placeholder:text-xs"
+              />
+            </div>
+            <div className="hidden md:block shrink-0">
+              <ExportButtonGroup
+                onExportJpeg={() => { }}
+                onExportCsv={handleCsvExport}
+                csvOnly={true}
               />
             </div>
           </div>

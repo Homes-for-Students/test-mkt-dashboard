@@ -151,6 +151,8 @@ export default function Home() {
     };
   }, [filteredProperties, selectedCity]);
 
+  const isResearchEnabled = selectedCity !== 'All' || selectedPropertyIds.length === 1;
+
   const renderActiveView = () => {
     switch (activeTab) {
       case 'overview':
@@ -261,7 +263,7 @@ export default function Home() {
 
       {/* Filter Row */}
       {selectedPropertyIds !== undefined && (
-        <div className="border-b border-slate-100 bg-slate-50/60 px-3 sm:px-6 md:px-8 py-1.5 sticky top-16 z-30 overflow-visible">
+        <div className="border-b border-slate-100 bg-slate-50/60 px-5 sm:px-6 md:px-8 py-1.5 sticky top-16 z-30 overflow-visible">
           <div className="flex items-center flex-wrap gap-2 overflow-visible">
             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider shrink-0">Filters:</span>
 
@@ -292,25 +294,22 @@ export default function Home() {
               </button>
             )}
 
-            <div className="flex-1 min-w-[10px]" />
-            
+            <div className="hidden sm:block flex-1 min-w-[10px]" />
+
             {(() => {
-              const isResearchEnabled = selectedCity !== 'All' || selectedPropertyIds.length === 1;
               return (
                 <button
                   onClick={() => isResearchEnabled && setIsCityResearchModalOpen(true)}
                   disabled={!isResearchEnabled}
-                  className={`group px-3 py-1.5 text-xs font-semibold rounded-md transition-all duration-300 h-8 flex items-center gap-1.5 whitespace-nowrap ml-auto cursor-pointer ${
-                    isResearchEnabled
-                      ? 'text-slate-600 bg-white border border-slate-200 hover:border-amber-500 hover:text-amber-600 hover:shadow-md hover:shadow-amber-500/10'
-                      : 'text-slate-300 bg-slate-50 border border-slate-200 cursor-not-allowed'
-                  }`}
+                  className={`group px-3 py-1.5 text-xs font-semibold rounded-md transition-all duration-300 h-8 hidden sm:flex items-center justify-center gap-1.5 whitespace-nowrap sm:w-auto sm:ml-auto cursor-pointer ${isResearchEnabled
+                    ? 'text-slate-600 bg-white border border-slate-200 hover:border-amber-500 hover:text-amber-600 hover:shadow-md hover:shadow-amber-500/10'
+                    : 'text-slate-300 bg-slate-50 border border-slate-200 cursor-not-allowed'
+                    }`}
                 >
-                  <MapPinned className={`w-3.5 h-3.5 transition-colors ${
-                    isResearchEnabled 
-                      ? 'text-slate-400 group-hover:text-amber-500 group-hover:animate-bounce' 
-                      : 'text-slate-300'
-                  }`} />
+                  <MapPinned className={`w-3.5 h-3.5 transition-colors ${isResearchEnabled
+                    ? 'text-slate-400 group-hover:text-amber-500 group-hover:animate-bounce'
+                    : 'text-slate-300'
+                    }`} />
                   <span>Market & City Insights</span>
                 </button>
               );
@@ -336,17 +335,43 @@ export default function Home() {
         {/* Scrolling Viewport (takes full remaining width) */}
         <div className="flex-1 overflow-y-auto w-full">
           {/* Central Dashboard Content Viewport */}
-          <main className="pt-0 px-3 sm:px-6 md:px-8 pb-6 md:pb-8 max-w-7xl mx-auto w-full">
+          <main className="pt-0 px-5 sm:px-6 md:px-8 pb-6 md:pb-8 max-w-7xl mx-auto w-full">
             {/* Section Header — hidden for properties tab which has its own header */}
             {activeTab !== 'properties' && (
-              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4 sticky top-0 bg-background z-20 pt-3 md:pt-4 pb-2 border-b border-slate-100/50 -mx-3 sm:-mx-6 md:-mx-8 px-3 sm:px-6 md:px-8">
-                <div>
-                  <h2 className="text-base md:text-xl font-semibold text-slate-900 tracking-tight flex items-center gap-2" style={{ fontFamily: 'var(--title)' }}>
-                    {activeTab === 'overview' && 'Executive Performance Overview'}
-                    {activeTab === 'campaigns' && 'Search Performance Hub'}
-                    {activeTab === 'ga4' && 'Website Performance'}
-                    {activeTab === 'shared-links' && 'Shared Links Manager'}
-                  </h2>
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4 top-0 bg-background z-20 pt-3 md:pt-4 pb-2 border-b border-slate-100/50 -mx-5 sm:-mx-6 md:-mx-8 px-5 sm:px-6 md:px-8">
+                <div className="w-full md:w-auto">
+                  <div className="flex items-center justify-between gap-3">
+                    <h2 className="text-base md:text-xl font-bold text-slate-900 tracking-tight flex items-center gap-2" style={{ fontFamily: 'var(--title)' }}>
+                      {activeTab === 'overview' && (
+                        <>
+                          <span className="hidden sm:inline">Executive Performance Overview</span>
+                          <span className="sm:hidden">Performance Overview</span>
+                        </>
+                      )}
+                      {activeTab === 'campaigns' && 'Search Performance Hub'}
+                      {activeTab === 'ga4' && 'Website Performance'}
+                      {activeTab === 'shared-links' && 'Shared Links Manager'}
+                    </h2>
+                    {/* Mobile-only "City Insights" button next to title (only on overview tab) */}
+                    {activeTab === 'overview' && (
+                      <div className="sm:hidden shrink-0">
+                        <button
+                          onClick={() => isResearchEnabled && setIsCityResearchModalOpen(true)}
+                          disabled={!isResearchEnabled}
+                          className={`group px-2.5 py-1 text-[11px] font-semibold rounded-md transition-all duration-300 h-7 flex items-center gap-1.5 whitespace-nowrap cursor-pointer ${isResearchEnabled
+                            ? 'text-slate-600 bg-white border border-slate-200 hover:border-amber-500 hover:text-amber-600 hover:shadow-sm'
+                            : 'text-slate-300 bg-slate-50 border border-slate-200 cursor-not-allowed'
+                            }`}
+                        >
+                          <MapPinned className={`w-3.5 h-3.5 transition-colors ${isResearchEnabled
+                            ? 'text-slate-400 group-hover:text-amber-500'
+                            : 'text-slate-300'
+                            }`} />
+                          <span>Market & City Insights</span>
+                        </button>
+                      </div>
+                    )}
+                  </div>
                   <p className="hidden sm:block text-xs text-slate-400 font-medium mt-1" style={{ fontFamily: 'var(--font)' }}>
                     {activeTab === 'overview' && 'Consolidated view of ad spends, conversions, and direct sheets revenue.'}
                     {activeTab === 'campaigns' && 'Analyze both paid Google Ads campaigns and organic Google search performance side-by-side.'}

@@ -32,11 +32,11 @@ export default function CityResearchModal({ propertyId, city, isOpen, onClose }:
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/20 p-4 sm:p-6 animate-fade-in">
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+        <div className="flex items-center justify-between px-4 sm:px-6 pt-5 sm:pt-7 pb-3 sm:pb-4 border-b border-slate-100">
           <div className="flex items-center gap-3">
             <div>
-              <div className="flex items-center gap-2">
-                <h3 className="font-semibold text-slate-900 text-lg">
+              <div className="flex flex-wrap items-center gap-2">
+                <h3 className="font-semibold text-slate-900 text-sm sm:text-base md:text-lg">
                   City Research {cityName ? `for ${cityName}` : ''}
                 </h3>
                 {lastChecked && (
@@ -45,7 +45,7 @@ export default function CityResearchModal({ propertyId, city, isOpen, onClose }:
                   </span>
                 )}
               </div>
-              <p className="text-xs text-slate-500 mt-1">Live data matching the property's exact location and city</p>
+              <p className="text-xs text-slate-500 mt-1 hidden sm:block">Live data matching the property's exact location and city</p>
             </div>
           </div>
           <button
@@ -57,7 +57,7 @@ export default function CityResearchModal({ propertyId, city, isOpen, onClose }:
         </div>
 
         {/* Content */}
-        <div className="p-5 overflow-y-auto bg-slate-50/50 custom-scrollbar flex-1">
+        <div className="p-4 sm:p-5 overflow-y-auto bg-slate-50/50 custom-scrollbar flex-1">
           {/* First Row: Transit & Crime */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <TransitWidget propertyId={propertyId} />

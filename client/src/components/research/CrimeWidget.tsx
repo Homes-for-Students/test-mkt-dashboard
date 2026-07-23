@@ -16,7 +16,7 @@ export default function CrimeWidget({ propertyId }: { propertyId?: string | null
     <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
       <div className="flex items-center gap-2 mb-4">
         <ShieldAlert className="w-5 h-5 text-rose-500" />
-        <h4 className="font-semibold text-slate-800">Local Crime</h4>
+        <h4 className="font-semibold text-slate-800 text-sm sm:text-base">Local Crime</h4>
       </div>
       
       {!propertyId ? (

@@ -167,9 +167,11 @@
   .dark ::selection {
     @apply bg-slate-700 text-slate-100;
   }
-  h1, h2, h3, h4, h5, h6,
-  [data-slot="card-title"] {
+  h1, h2, h3, h4, h5, h6 {
     font-family: var(--title);
+  }
+  [data-slot="card-title"] {
+    font-family: var(--font);
   }
   button:not(:disabled),
   [role="button"]:not([aria-disabled="true"]),

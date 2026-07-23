@@ -16,7 +16,7 @@ export default function TransitWidget({ propertyId }: { propertyId?: string | nu
     <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
       <div className="flex items-center gap-2 mb-4">
         <Bus className="w-5 h-5 text-amber-600" />
-        <h4 className="font-semibold text-slate-800">Transit Disruptions</h4>
+        <h4 className="font-semibold text-slate-800 text-sm sm:text-base">Transit Disruptions</h4>
       </div>
 
       {!propertyId ? (

@@ -212,6 +212,10 @@ export default function PropertyManagement() {
   const [searchQuery, setSearchQuery] = useState('');
   const [filterBrand, setFilterBrand] = useState('');
   const [filterCity, setFilterCity] = useState('');
+  const [filterClient, setFilterClient] = useState('');
+  const [brandSearch, setBrandSearch] = useState('');
+  const [citySearch, setCitySearch] = useState('');
+  const [clientSearch, setClientSearch] = useState('');
   const [formData, setFormData] = useState({
     name: '',
     brand: '',
@@ -239,6 +243,21 @@ export default function PropertyManagement() {
     return Array.from(new Set(targetProps.map((p) => p.city))).sort();
   }, [properties, filterBrand]);
 
+  const filteredBrandsForDropdown = useMemo(() => {
+    const term = brandSearch.toLowerCase();
+    return existingBrands.filter(b => b.toLowerCase().includes(term));
+  }, [existingBrands, brandSearch]);
+
+  const filteredCitiesForDropdown = useMemo(() => {
+    const term = citySearch.toLowerCase();
+    return existingCities.filter(c => c.toLowerCase().includes(term));
+  }, [existingCities, citySearch]);
+
+  const filteredClientsForDropdown = useMemo(() => {
+    const term = clientSearch.toLowerCase();
+    return existingClients.filter(c => c.toLowerCase().includes(term));
+  }, [existingClients, clientSearch]);
+
   const handleBrandFilterChange = (brand: string) => {
     setFilterBrand(brand);
     if (brand) {
@@ -255,7 +274,9 @@ export default function PropertyManagement() {
       // 1. text search
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase();
-        if (!p.name.toLowerCase().includes(q) && !p.brand.toLowerCase().includes(q)) {
+        if (!p.name.toLowerCase().includes(q) && 
+            !p.brand.toLowerCase().includes(q) && 
+            !((p as any).client || '').toLowerCase().includes(q)) {
           return false;
         }
       }
@@ -263,10 +284,12 @@ export default function PropertyManagement() {
       if (filterBrand && p.brand !== filterBrand) return false;
       // 3. city column filter
       if (filterCity && p.city !== filterCity) return false;
+      // 4. client column filter
+      if (filterClient && (p as any).client !== filterClient) return false;
 
       return true;
     });
-  }, [properties, searchQuery, filterBrand, filterCity]);
+  }, [properties, searchQuery, filterBrand, filterCity, filterClient]);
 
   const handleOpenNew = () => {
     setEditingId(null);
@@ -584,10 +607,10 @@ export default function PropertyManagement() {
             <Search className="absolute left-5 sm:left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
             <input
               type="text"
-              placeholder="Filter by property or brand..."
+              placeholder="Filter by property, brand, or client..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 sm:pl-12 pr-10 py-2 text-sm bg-white border border-slate-200 focus:border-orange-300 focus:ring-4 focus:ring-orange-500/10 rounded-xl transition-all placeholder:text-slate-400"
+              className="w-full pl-10 sm:pl-12 pr-10 py-2 text-sm bg-white border border-slate-200 focus:outline-none focus:border-orange-300 focus:ring-4 focus:ring-orange-500/10 rounded-xl transition-all placeholder:text-slate-400"
               style={{ fontFamily: 'var(--font)' }}
             />
             {searchQuery && (
@@ -605,25 +628,48 @@ export default function PropertyManagement() {
             <table className="w-full text-sm text-left whitespace-nowrap" style={{ fontFamily: 'var(--font)' }}>
               <thead>
                 <tr className="border-b border-slate-100 bg-slate-50/70">
-                  <th className="px-6 py-3.5 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                  <th className="px-6 py-3.5 text-xs font-semibold text-slate-500 uppercase tracking-wider w-[35%]">
                     Property Name
                   </th>
-                  <th className="px-6 py-3.5 text-xs font-semibold text-slate-500 uppercase tracking-wider w-32">
-                    <DropdownMenu>
+                  <th className="px-6 py-3.5 text-xs font-semibold text-slate-500 uppercase tracking-wider w-[15%]">
+                    <DropdownMenu onOpenChange={(open) => !open && setBrandSearch('')}>
                       <DropdownMenuTrigger asChild>
                         <button className="flex items-center gap-1.5 hover:text-slate-800 transition-colors focus:outline-none">
                            BRAND
                           <Filter className={`h-3 w-3 ${filterBrand ? 'text-orange-500 fill-orange-500' : 'text-slate-400'}`} />
                         </button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="start" className="w-48 max-h-[300px] overflow-y-auto" style={{ fontFamily: 'var(--font)' }}>
+                      <DropdownMenuContent align="start" className="w-56 max-h-[300px] overflow-y-auto" style={{ fontFamily: 'var(--font)' }}>
+                        <div className="p-2 border-b border-slate-100 sticky top-0 bg-white z-10 flex gap-1.5 items-center">
+                          <input
+                            type="text"
+                            placeholder="Search Brand..."
+                            value={brandSearch}
+                            onChange={(e) => setBrandSearch(e.target.value)}
+                            className="w-full px-2 py-1 text-xs border border-slate-200 rounded focus:outline-none focus:border-orange-500"
+                            onClick={(e) => e.stopPropagation()}
+                            onKeyDown={(e) => e.stopPropagation()}
+                          />
+                          {filterBrand && (
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleBrandFilterChange('');
+                              }}
+                              className="text-[10px] text-slate-400 hover:text-red-500 font-medium px-1 uppercase"
+                            >
+                              Clear
+                            </button>
+                          )}
+                        </div>
                         <DropdownMenuItem
                           onClick={() => handleBrandFilterChange('')}
                           className={!filterBrand ? 'font-bold text-orange-600 bg-orange-50/50' : ''}
                         >
                           All Brands
                         </DropdownMenuItem>
-                        {existingBrands.map((b) => (
+                        {filteredBrandsForDropdown.map((b) => (
                           <DropdownMenuItem
                             key={b}
                             onClick={() => handleBrandFilterChange(b)}
@@ -635,22 +681,45 @@ export default function PropertyManagement() {
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </th>
-                  <th className="px-6 py-3.5 text-xs font-semibold text-slate-500 uppercase tracking-wider w-36">
-                    <DropdownMenu>
+                  <th className="px-6 py-3.5 text-xs font-semibold text-slate-500 uppercase tracking-wider w-[15%]">
+                    <DropdownMenu onOpenChange={(open) => !open && setCitySearch('')}>
                       <DropdownMenuTrigger asChild>
                         <button className="flex items-center gap-1.5 hover:text-slate-800 transition-colors focus:outline-none">
                           CITY
                           <Filter className={`h-3 w-3 ${filterCity ? 'text-orange-500 fill-orange-500' : 'text-slate-400'}`} />
                         </button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="start" className="w-48 max-h-[300px] overflow-y-auto" style={{ fontFamily: 'var(--font)' }}>
+                      <DropdownMenuContent align="start" className="w-56 max-h-[300px] overflow-y-auto" style={{ fontFamily: 'var(--font)' }}>
+                        <div className="p-2 border-b border-slate-100 sticky top-0 bg-white z-10 flex gap-1.5 items-center">
+                          <input
+                            type="text"
+                            placeholder="Search City..."
+                            value={citySearch}
+                            onChange={(e) => setCitySearch(e.target.value)}
+                            className="w-full px-2 py-1 text-xs border border-slate-200 rounded focus:outline-none focus:border-orange-500"
+                            onClick={(e) => e.stopPropagation()}
+                            onKeyDown={(e) => e.stopPropagation()}
+                          />
+                          {filterCity && (
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setFilterCity('');
+                              }}
+                              className="text-[10px] text-slate-400 hover:text-red-500 font-medium px-1 uppercase"
+                            >
+                              Clear
+                            </button>
+                          )}
+                        </div>
                         <DropdownMenuItem
                           onClick={() => setFilterCity('')}
                           className={!filterCity ? 'font-bold text-orange-600 bg-orange-50/50' : ''}
                         >
                           All Cities
                         </DropdownMenuItem>
-                        {existingCities.map((c) => (
+                        {filteredCitiesForDropdown.map((c) => (
                           <DropdownMenuItem
                             key={c}
                             onClick={() => setFilterCity(c)}
@@ -662,10 +731,57 @@ export default function PropertyManagement() {
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </th>
-                  <th className="px-6 py-3.5 text-xs font-semibold text-slate-500 uppercase tracking-wider w-48">
-                    Client
+                  <th className="px-6 py-3.5 text-xs font-semibold text-slate-500 uppercase tracking-wider w-[20%]">
+                    <DropdownMenu onOpenChange={(open) => !open && setClientSearch('')}>
+                      <DropdownMenuTrigger asChild>
+                        <button className="flex items-center gap-1.5 hover:text-slate-800 transition-colors focus:outline-none">
+                          CLIENT
+                          <Filter className={`h-3 w-3 ${filterClient ? 'text-orange-500 fill-orange-500' : 'text-slate-400'}`} />
+                        </button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="start" className="w-56 max-h-[300px] overflow-y-auto" style={{ fontFamily: 'var(--font)' }}>
+                        <div className="p-2 border-b border-slate-100 sticky top-0 bg-white z-10 flex gap-1.5 items-center">
+                          <input
+                            type="text"
+                            placeholder="Search Client..."
+                            value={clientSearch}
+                            onChange={(e) => setClientSearch(e.target.value)}
+                            className="w-full px-2 py-1 text-xs border border-slate-200 rounded focus:outline-none focus:border-orange-500"
+                            onClick={(e) => e.stopPropagation()}
+                            onKeyDown={(e) => e.stopPropagation()}
+                          />
+                          {filterClient && (
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setFilterClient('');
+                              }}
+                              className="text-[10px] text-slate-400 hover:text-red-500 font-medium px-1 uppercase"
+                            >
+                              Clear
+                            </button>
+                          )}
+                        </div>
+                        <DropdownMenuItem
+                          onClick={() => setFilterClient('')}
+                          className={!filterClient ? 'font-bold text-orange-600 bg-orange-50/50' : ''}
+                        >
+                          All Clients
+                        </DropdownMenuItem>
+                        {filteredClientsForDropdown.map((c) => (
+                          <DropdownMenuItem
+                            key={c}
+                            onClick={() => setFilterClient(c)}
+                            className={filterClient === c ? 'font-bold text-orange-600 bg-orange-50/50' : ''}
+                          >
+                            {c}
+                          </DropdownMenuItem>
+                        ))}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </th>
-                  <th className="px-6 py-3.5 text-xs font-semibold text-slate-500 uppercase tracking-wider text-left w-24">
+                  <th className="px-6 py-3.5 text-xs font-semibold text-slate-500 uppercase tracking-wider text-left w-[15%]">
                     Actions
                   </th>
                 </tr>
@@ -680,7 +796,7 @@ export default function PropertyManagement() {
                       </span>
                     </td>
                     <td className="px-6 py-3 text-slate-500">{prop.city}</td>
-                    <td className="px-6 py-3 text-slate-500">{(prop as any).client || '-'}</td>
+                    <td className="px-6 py-3 text-slate-500 max-w-[150px] truncate" title={(prop as any).client || '-'}>{(prop as any).client || '-'}</td>
                     <td className="px-6 py-3 text-left">
                       <div className="flex items-center justify-start gap-1">
                         <Button

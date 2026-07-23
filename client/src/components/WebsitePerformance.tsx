@@ -351,7 +351,7 @@ export default function WebsitePerformance({
               <Globe className="h-4.5 w-4.5 text-blue-600 shrink-0" />
             </div>
             <div className="mt-3">
-              <p className="text-2xl font-bold text-slate-900 leading-tight">{metrics.totalViews.toLocaleString()}</p>
+              <p className="text-xl sm:text-2xl font-bold text-slate-900 leading-tight">{metrics.totalViews.toLocaleString()}</p>
               <p className="text-xs text-slate-400 mt-1 leading-normal">Page views worldwide</p>
             </div>
           </div>
@@ -363,7 +363,7 @@ export default function WebsitePerformance({
               <Users className="h-4.5 w-4.5 text-blue-600 shrink-0" />
             </div>
             <div className="mt-3">
-              <p className="text-2xl font-bold text-slate-900 leading-tight">{metrics.totalTraffic.toLocaleString()}</p>
+              <p className="text-xl sm:text-2xl font-bold text-slate-900 leading-tight">{metrics.totalTraffic.toLocaleString()}</p>
               <p className="text-xs text-slate-400 mt-1 leading-normal">Users from all sources</p>
             </div>
           </div>
@@ -375,7 +375,7 @@ export default function WebsitePerformance({
               <TrendingUp className="h-4.5 w-4.5 text-green-600 shrink-0" />
             </div>
             <div className="mt-3">
-              <p className="text-2xl font-bold text-slate-900 leading-tight">{metrics.avgSessionDuration}m</p>
+              <p className="text-xl sm:text-2xl font-bold text-slate-900 leading-tight">{metrics.avgSessionDuration}m</p>
               <p className="text-xs text-slate-400 mt-1 leading-normal">Minutes per session</p>
             </div>
           </div>
@@ -387,7 +387,7 @@ export default function WebsitePerformance({
               <Activity className="h-4.5 w-4.5 text-red-600 shrink-0" />
             </div>
             <div className="mt-3">
-              <p className="text-2xl font-bold text-slate-900 leading-tight">{metrics.avgBounceRate}%</p>
+              <p className="text-xl sm:text-2xl font-bold text-slate-900 leading-tight">{metrics.avgBounceRate}%</p>
               <p className="text-xs text-slate-400 mt-1 leading-normal">Average across period</p>
             </div>
           </div>
@@ -398,10 +398,10 @@ export default function WebsitePerformance({
       <div className="grid grid-cols-1 gap-6">
         {/* User Source Table (Refined gap) */}
         <div className="h-full flex flex-col">
-          <Card className="border-slate-100/80 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.015)] rounded-2xl overflow-hidden h-full flex flex-col justify-between">
+          <Card className="border-slate-100/80 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.015)] rounded-2xl overflow-hidden h-full flex flex-col justify-start gap-0 py-0">
             <CardHeader className="p-5 pb-3">
-              <div className="flex items-center justify-start gap-6">
-                <CardTitle className="text-base font-bold text-slate-900 tracking-tight flex items-center gap-2">
+              <div className="flex flex-col items-start sm:flex-row sm:items-center sm:justify-between gap-3">
+                <CardTitle className="text-sm sm:text-base font-bold text-slate-900 tracking-tight flex items-center gap-2">
                   <Users className="h-4.5 w-4.5 text-blue-500" />
                   Traffic by Source
                 </CardTitle>
@@ -480,10 +480,10 @@ export default function WebsitePerformance({
 
         {/* AI Traffic Overview (Refined gap) */}
         <div className="h-full flex flex-col">
-          <Card className="border-slate-100/80 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.015)] rounded-2xl overflow-hidden h-full flex flex-col justify-between">
+          <Card className="border-slate-100/80 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.015)] rounded-2xl overflow-hidden h-full flex flex-col justify-start gap-0 py-0">
             <CardHeader className="p-5 pb-3">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-base font-bold text-slate-900 tracking-tight flex items-center gap-2">
+                <CardTitle className="text-sm sm:text-base font-bold text-slate-900 tracking-tight flex items-center gap-2">
                   <Sparkles className="h-4.5 w-4.5 text-indigo-600 animate-pulse" />
                   AI Traffic Overview
                 </CardTitle>
