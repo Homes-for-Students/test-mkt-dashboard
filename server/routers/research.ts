@@ -186,14 +186,20 @@ export const researchRouter = router({
          
          const halls = res.data?.data || [];
          
-         const cityHalls = halls.map((h: any) => ({
-           id: h.id,
-           name: h.attributes?.name,
-           landlord: h.attributes?.landlord,
-           minimumPrice: h.attributes?.minimumPrice,
-           pricePersonWeek: h.attributes?.pricePersonWeek,
-           city: h.attributes?.city
-         })).sort((a: any, b: any) => (a.minimumPrice || Infinity) - (b.minimumPrice || Infinity));
+         const cityHalls = halls
+           .filter((h: any) => {
+             const hallCity = h.attributes?.city || "";
+             return hallCity.toLowerCase() === city!.toLowerCase();
+           })
+           .map((h: any) => ({
+             id: h.id,
+             name: h.attributes?.name,
+             landlord: h.attributes?.landlord,
+             minimumPrice: h.attributes?.minimumPrice,
+             pricePersonWeek: h.attributes?.pricePersonWeek,
+             city: h.attributes?.city
+           }))
+           .sort((a: any, b: any) => (a.minimumPrice || Infinity) - (b.minimumPrice || Infinity));
          
          // Fetch incentives for top 10 competitors in parallel
          const competitorsWithIncentives = await Promise.all(

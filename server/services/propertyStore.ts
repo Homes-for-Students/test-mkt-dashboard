@@ -49,8 +49,10 @@ export class PropertyStore {
   static add(property: Omit<Property, 'id' | 'ga4PagePath'>): Property {
     const properties = this.load();
     let ga4PagePath = '';
-    if (property.websiteUrl && property.websiteUrl.startsWith('http')) {
-       try { ga4PagePath = new URL(property.websiteUrl).pathname; } catch(e) {}
+    if (property.websiteUrl) {
+       let urlStr = property.websiteUrl.trim();
+       if (!urlStr.startsWith('http')) urlStr = 'https://' + urlStr;
+       try { ga4PagePath = new URL(urlStr).pathname; } catch(e) {}
     }
 
     const newProperty: Property = {
@@ -69,8 +71,10 @@ export class PropertyStore {
     if (index === -1) return null;
     
     let ga4PagePath = properties[index].ga4PagePath;
-    if (updates.websiteUrl && updates.websiteUrl.startsWith('http')) {
-       try { ga4PagePath = new URL(updates.websiteUrl).pathname; } catch(e) {}
+    if (updates.websiteUrl) {
+       let urlStr = updates.websiteUrl.trim();
+       if (!urlStr.startsWith('http')) urlStr = 'https://' + urlStr;
+       try { ga4PagePath = new URL(urlStr).pathname; } catch(e) {}
     }
 
     const updatedProperty = { ...properties[index], ...updates, ga4PagePath };
