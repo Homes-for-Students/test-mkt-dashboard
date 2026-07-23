@@ -10,6 +10,7 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [otpCode, setOtpCode] = useState("");
   const [step, setStep] = useState<"email" | "otp">("email");
+  const [showPassword, setShowPassword] = useState(false);
   const [_, setLocation] = useLocation();
 
   const loginMutation = trpc.auth.login.useMutation({
@@ -46,19 +47,16 @@ export default function Login() {
     },
   });
 
-  const handlePasswordLogin = (e: React.FormEvent) => {
+  const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email || !password) return;
-    loginMutation.mutate({ email, password });
-  };
+    if (!email) return;
 
-  const handleRequestOtp = (e: React.MouseEvent) => {
-    e.preventDefault();
-    if (!email) {
-      toast.error("Please enter your email first");
-      return;
+    if (showPassword) {
+      if (!password) return;
+      loginMutation.mutate({ email, password });
+    } else {
+      requestOtpMutation.mutate({ email });
     }
-    requestOtpMutation.mutate({ email });
   };
 
   const handleOtpSubmit = (e: React.FormEvent) => {
@@ -84,7 +82,7 @@ export default function Login() {
         <div className="bg-white/80 backdrop-blur-xl border border-slate-200/60 shadow-[0_8px_40px_rgb(0,0,0,0.04)] rounded-3xl p-8 sm:p-10">
           
           <div className="text-center mb-8">
-            <motion.div
+            <motion.div 
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ delay: 0.1, duration: 0.4 }}
@@ -100,12 +98,12 @@ export default function Login() {
 
           <AnimatePresence mode="wait">
             {step === "email" ? (
-              <motion.form
+              <motion.form 
                 key="email-form"
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 20 }}
-                onSubmit={handlePasswordLogin}
+                onSubmit={handleFormSubmit} 
                 className="space-y-5"
               >
                 <div className="space-y-4">
@@ -126,75 +124,111 @@ export default function Login() {
                     </div>
                   </div>
 
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-semibold text-slate-600 uppercase tracking-wider ml-1">Password</label>
-                    <div className="relative group">
-                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-blue-500 transition-colors">
-                        <Lock className="h-5 w-5" strokeWidth={1.5} />
-                      </div>
-                      <input
-                        type="password"
-                        placeholder="••••••••"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        className="w-full pl-11 pr-4 py-3.5 bg-slate-50/50 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200"
-                      />
-                    </div>
-                  </div>
+                  <AnimatePresence>
+                    {showPassword && (
+                      <motion.div 
+                        initial={{ opacity: 0, height: 0, marginTop: 0 }}
+                        animate={{ opacity: 1, height: "auto", marginTop: 16 }}
+                        exit={{ opacity: 0, height: 0, marginTop: 0 }}
+                        className="space-y-1.5 overflow-hidden"
+                      >
+                        <label className="text-xs font-semibold text-slate-600 uppercase tracking-wider ml-1">Password</label>
+                        <div className="relative group">
+                          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-blue-500 transition-colors">
+                            <Lock className="h-5 w-5" strokeWidth={1.5} />
+                          </div>
+                          <input
+                            type="password"
+                            placeholder="••••••••"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            className="w-full pl-11 pr-4 py-3.5 bg-slate-50/50 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200"
+                            required={showPassword}
+                          />
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
 
                 <div className="pt-2 flex flex-col gap-3">
-                  <button
-                    type="submit"
-                    disabled={loginMutation.isPending}
-                    className="w-full bg-[#1a2b4c] hover:bg-[#2a3b5c] text-white rounded-xl py-3.5 font-semibold text-sm transition-colors duration-200 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                  >
-                    {loginMutation.isPending ? (
-                      <>
-                        <Loader2 className="h-5 w-5 animate-spin" />
-                        Signing in...
-                      </>
-                    ) : (
-                      <>
-                        Sign In with Password
-                        <ArrowRight className="h-4 w-4" />
-                      </>
-                    )}
-                  </button>
+                  {!showPassword ? (
+                    <>
+                      <button
+                        type="submit"
+                        disabled={requestOtpMutation.isPending}
+                        className="w-full bg-[#1a2b4c] hover:bg-[#2a3b5c] text-white rounded-xl py-3.5 font-semibold text-sm transition-colors duration-200 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                      >
+                        {requestOtpMutation.isPending ? (
+                          <>
+                            <Loader2 className="h-5 w-5 animate-spin" />
+                            Sending...
+                          </>
+                        ) : (
+                          <>
+                            Get code
+                          </>
+                        )}
+                      </button>
 
-                  <div className="relative flex items-center py-2">
-                    <div className="flex-grow border-t border-slate-200"></div>
-                    <span className="flex-shrink-0 mx-4 text-xs font-medium text-slate-400">OR</span>
-                    <div className="flex-grow border-t border-slate-200"></div>
-                  </div>
+                      <div className="relative flex items-center py-2">
+                        <div className="flex-grow border-t border-slate-200"></div>
+                        <span className="flex-shrink-0 mx-4 text-xs font-medium text-slate-400">OR</span>
+                        <div className="flex-grow border-t border-slate-200"></div>
+                      </div>
 
-                  <button
-                    type="button"
-                    onClick={handleRequestOtp}
-                    disabled={requestOtpMutation.isPending}
-                    className="w-full bg-white hover:bg-slate-50 text-[#1a2b4c] border border-slate-200 rounded-xl py-3.5 font-semibold text-sm transition-colors duration-200 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                  >
-                    {requestOtpMutation.isPending ? (
-                      <>
-                        <Loader2 className="h-5 w-5 animate-spin" />
-                        Sending...
-                      </>
-                    ) : (
-                      <>
-                        Get code
-                        <Mail className="h-4 w-4" />
-                      </>
-                    )}
-                  </button>
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(true)}
+                        className="w-full bg-white hover:bg-slate-50 text-[#1a2b4c] border border-slate-200 rounded-xl py-3.5 font-semibold text-sm transition-colors duration-200 disabled:opacity-70 flex items-center justify-center gap-2"
+                      >
+                        Sign in with password
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <button
+                        type="submit"
+                        disabled={loginMutation.isPending}
+                        className="w-full bg-[#1a2b4c] hover:bg-[#2a3b5c] text-white rounded-xl py-3.5 font-semibold text-sm transition-colors duration-200 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                      >
+                        {loginMutation.isPending ? (
+                          <>
+                            <Loader2 className="h-5 w-5 animate-spin" />
+                            Signing in...
+                          </>
+                        ) : (
+                          <>
+                            Sign in
+                            <ArrowRight className="h-4 w-4" />
+                          </>
+                        )}
+                      </button>
+
+                      <div className="relative flex items-center py-2">
+                        <div className="flex-grow border-t border-slate-200"></div>
+                        <span className="flex-shrink-0 mx-4 text-xs font-medium text-slate-400">OR</span>
+                        <div className="flex-grow border-t border-slate-200"></div>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(false)}
+                        className="w-full bg-white hover:bg-slate-50 text-[#1a2b4c] border border-slate-200 rounded-xl py-3.5 font-semibold text-sm transition-colors duration-200 disabled:opacity-70 flex items-center justify-center gap-2"
+                      >
+                        Get code instead
+                      </button>
+                    </>
+                  )}
                 </div>
               </motion.form>
             ) : (
-              <motion.form
+              <motion.form 
                 key="otp-form"
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 20 }}
-                onSubmit={handleOtpSubmit}
+                onSubmit={handleOtpSubmit} 
                 className="space-y-5"
               >
                 <div className="space-y-1.5">
@@ -245,7 +279,7 @@ export default function Login() {
           </AnimatePresence>
 
         </div>
-
+        
         <div className="mt-8 text-center">
           <p className="text-xs text-slate-400 font-medium">
             Protected by internal HFS security protocols.
