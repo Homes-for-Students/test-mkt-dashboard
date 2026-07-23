@@ -93,18 +93,31 @@ export const authRouter = router({
         .where(eq(users.id, user.id));
 
       try {
-        const mailerUrl = "https://hfs-mailer.marketingenquiries.workers.dev";
-        const res = await fetch(mailerUrl, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email: user.email, otpCode })
-        });
-        
-        if (!res.ok) {
-          console.error("Failed to send email via Cloudflare worker", await res.text());
+        const resendApiKey = process.env.RESEND_API_KEY;
+        if (!resendApiKey) {
+          console.error("Missing RESEND_API_KEY environment variable");
+        } else {
+          const fromEmail = process.env.RESEND_FROM_EMAIL || "onboarding@resend.dev";
+          const res = await fetch("https://api.resend.com/emails", {
+            method: "POST",
+            headers: {
+              "Authorization": `Bearer ${resendApiKey}`,
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              from: `HFS Dashboard <${fromEmail}>`,
+              to: user.email,
+              subject: "Your Dashboard Login Code",
+              text: `Your One-Time Passcode is: ${otpCode}\n\nThis code will expire in 10 minutes.\nIf you did not request this, please ignore this email.`
+            })
+          });
+          
+          if (!res.ok) {
+            console.error("Failed to send email via Resend", await res.text());
+          }
         }
       } catch (err) {
-        console.error("Error calling mailer", err);
+        console.error("Error calling Resend", err);
       }
 
       return { success: true };

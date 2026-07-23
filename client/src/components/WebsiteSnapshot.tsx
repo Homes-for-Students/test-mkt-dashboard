@@ -13,6 +13,26 @@ import {
   VIEWS_BY_COUNTRY
 } from './WebsitePerformance';
 
+import { Tooltip as UITooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { HelpCircle } from 'lucide-react';
+
+function SectionHelp({ text }: { text: string }) {
+  return (
+    <TooltipProvider>
+      <UITooltip>
+        <TooltipTrigger asChild>
+          <button type="button" className="text-slate-400 hover:text-slate-600 transition-colors focus:outline-none shrink-0">
+            <HelpCircle className="h-3.5 w-3.5" />
+          </button>
+        </TooltipTrigger>
+        <TooltipContent className="max-w-xs p-3 text-[11px] bg-slate-900 text-white rounded-lg shadow-xl border border-slate-800 leading-relaxed whitespace-pre-line z-[100]">
+          {text}
+        </TooltipContent>
+      </UITooltip>
+    </TooltipProvider>
+  );
+}
+
 interface WebsiteSnapshotProps {
   selectedCity?: string;
   selectedPropertyIds?: string[];
@@ -67,7 +87,8 @@ export default function WebsiteSnapshot({
           <div className="flex items-start justify-between gap-3">
             <CardTitle className="text-base font-bold text-slate-900 tracking-tight flex items-start sm:items-center gap-2">
               <Laptop className="h-4.5 w-4.5 text-slate-800 shrink-0 mt-0.5 sm:mt-0" />
-              <span className="leading-tight">Website Performance Snapshot</span>
+              <span className="leading-tight">Website Activity</span>
+              <SectionHelp text="See how many people visited your site, how long they stayed, and how they found you. Updates daily." />
             </CardTitle>
             <div className="shrink-0 -mt-1 -mr-1">
               <ExportButtonGroup
@@ -77,7 +98,7 @@ export default function WebsiteSnapshot({
                     'Date': d.date,
                     'Users': d.users
                   }));
-                  
+
                   const extendedMetadata = {
                     ...csvMetadata,
                     summaryStats: {
@@ -87,7 +108,7 @@ export default function WebsiteSnapshot({
                       'Bounce Rate (%)': metrics.avgBounceRate
                     }
                   };
-                  
+
                   exportToCsv(csvData, 'Website-Snapshot', extendedMetadata);
                 }}
               />

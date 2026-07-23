@@ -1,3 +1,5 @@
+import { EmailMessage } from "cloudflare:email";
+
 export default {
   async fetch(request, env, ctx) {
     if (request.method === "OPTIONS") {
@@ -21,40 +23,16 @@ export default {
         return new Response("Missing email or otpCode", { status: 400 });
       }
 
-      const sendRequest = new Request("https://api.mailchannels.net/tx/v1/send", {
-        method: "POST",
-        headers: {
-          "content-type": "application/json",
-        },
-        body: JSON.stringify({
-          personalizations: [
-            {
-              to: [{ email: email, name: "User" }],
-            },
-          ],
-          from: {
-            email: "no-reply@wearehomesforstudents.com",
-            name: "HFS Dashboard",
-          },
-          subject: "Your Dashboard Login Code",
-          content: [
-            {
-              type: "text/plain",
-              value: `Your One-Time Passcode is: ${otpCode}\n\nThis code will expire in 10 minutes.\nIf you did not request this, please ignore this email.`,
-            },
-          ],
-        }),
-      });
+      // Use Cloudflare Workers native Email Sending binding
+      const emailText = `Your HFS Dashboard One-Time Passcode is: ${otpCode}\n\nThis code will expire in 10 minutes.\nIf you did not request this, please ignore this email.`;
+      
+      const message = new EmailMessage(
+        "dashboard-auth@wearehomesforstudents.com", // Sender must be on a domain in your Cloudflare account
+        email,
+        emailText
+      );
 
-      const response = await fetch(sendRequest);
-      const resultText = await response.text();
-
-      if (!response.ok) {
-        return new Response(`MailChannels Error: ${resultText}`, { 
-          status: response.status,
-          headers: { "Access-Control-Allow-Origin": "*" }
-        });
-      }
+      await env.SEND_EMAIL.send(message);
 
       return new Response(JSON.stringify({ success: true, message: "Email sent" }), {
         status: 200,
@@ -64,7 +42,7 @@ export default {
         }
       });
     } catch (e) {
-      return new Response(`Error: ${e.message}`, { 
+      return new Response(`Email Send Error: ${e.message}`, { 
         status: 500,
         headers: { "Access-Control-Allow-Origin": "*" }
       });

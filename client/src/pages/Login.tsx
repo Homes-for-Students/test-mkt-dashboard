@@ -80,9 +80,9 @@ export default function Login() {
         className="w-full max-w-[420px] z-10 px-4"
       >
         <div className="bg-white/80 backdrop-blur-xl border border-slate-200/60 shadow-[0_8px_40px_rgb(0,0,0,0.04)] rounded-3xl p-8 sm:p-10">
-          
+
           <div className="text-center mb-8">
-            <motion.div 
+            <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ delay: 0.1, duration: 0.4 }}
@@ -90,7 +90,7 @@ export default function Login() {
             >
               <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
             </motion.div>
-            <h1 className="text-2xl font-bold text-slate-900 tracking-tight mb-2">Welcome back</h1>
+            <h1 className="text-2xl font-bold text-slate-900 tracking-tight mb-2">Welcome</h1>
             <p className="text-sm text-slate-500 font-medium">
               {step === "email" ? "Sign in to HFS reporting dashboard" : "Enter the 6-digit code sent to your email"}
             </p>
@@ -98,12 +98,12 @@ export default function Login() {
 
           <AnimatePresence mode="wait">
             {step === "email" ? (
-              <motion.form 
+              <motion.form
                 key="email-form"
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 20 }}
-                onSubmit={handleFormSubmit} 
+                onSubmit={handleFormSubmit}
                 className="space-y-5"
               >
                 <div className="space-y-4">
@@ -126,7 +126,7 @@ export default function Login() {
 
                   <AnimatePresence>
                     {showPassword && (
-                      <motion.div 
+                      <motion.div
                         initial={{ opacity: 0, height: 0, marginTop: 0 }}
                         animate={{ opacity: 1, height: "auto", marginTop: 16 }}
                         exit={{ opacity: 0, height: 0, marginTop: 0 }}
@@ -223,12 +223,12 @@ export default function Login() {
                 </div>
               </motion.form>
             ) : (
-              <motion.form 
+              <motion.form
                 key="otp-form"
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 20 }}
-                onSubmit={handleOtpSubmit} 
+                onSubmit={handleOtpSubmit}
                 className="space-y-5"
               >
                 <div className="space-y-1.5">
@@ -279,7 +279,7 @@ export default function Login() {
           </AnimatePresence>
 
         </div>
-        
+
         <div className="mt-8 text-center">
           <p className="text-xs text-slate-400 font-medium">
             Protected by internal HFS security protocols.

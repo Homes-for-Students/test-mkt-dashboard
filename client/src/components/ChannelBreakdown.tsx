@@ -26,6 +26,25 @@ import GoogleAdsTable from './GoogleAdsTable';
 import { getBrandDomain, AI_REFERRAL_DATA, AIReferralItem, USERS_BY_DAY, VIEWS_BY_COUNTRY, VIEWS_BY_DEVICE, CountryViewItem, DeviceViewItem, USER_SOURCES, UserSourceItem } from './WebsitePerformance';
 import ExportButtonGroup from '@/components/ExportButtonGroup';
 import { exportToJpeg, exportToCsv } from '@/lib/exportUtils';
+import { Tooltip as UITooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { HelpCircle } from 'lucide-react';
+
+function SectionHelp({ text }: { text: string }) {
+  return (
+    <TooltipProvider>
+      <UITooltip>
+        <TooltipTrigger asChild>
+          <button type="button" className="text-slate-400 hover:text-slate-600 transition-colors focus:outline-none shrink-0 inline-flex items-center">
+            <HelpCircle className="h-3.5 w-3.5" />
+          </button>
+        </TooltipTrigger>
+        <TooltipContent className="max-w-xs p-3 text-[11px] bg-slate-900 text-white rounded-lg shadow-xl border border-slate-800 leading-relaxed whitespace-pre-line z-[100]">
+          {text}
+        </TooltipContent>
+      </UITooltip>
+    </TooltipProvider>
+  );
+}
 
 
 // Refined channel details according to requirements
@@ -281,7 +300,10 @@ export default function ChannelBreakdown({
         {/* Sales (week) */}
         <div className="col-span-1 p-5 rounded-2xl bg-white border border-slate-100/80 shadow-[0_8px_30px_rgb(0,0,0,0.015)] hover:shadow-[0_12px_40px_rgba(0,0,0,0.02)] transition-all flex flex-col justify-start md:justify-between h-full">
           <div className="flex items-center justify-between w-full">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Sales (week)</span>
+            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+              Sales (week)
+              <SectionHelp text="Weekly updates on sales figures and occupancy levels, refreshed every Friday afternoon/Monday morning." />
+            </span>
             <div className="h-7 w-7 rounded-lg flex items-center justify-center shrink-0">
               <ChartLine className="h-4 w-4 text-slate-800" />
             </div>
@@ -299,7 +321,10 @@ export default function ChannelBreakdown({
         {/* Total Sales */}
         <div className="col-span-1 p-5 rounded-2xl bg-white border border-slate-100/80 shadow-[0_8px_30px_rgb(0,0,0,0.015)] hover:shadow-[0_12px_40px_rgba(0,0,0,0.02)] transition-all flex flex-col justify-start md:justify-between h-full">
           <div className="flex items-center justify-between w-full">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Sales</span>
+            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+              Total Sales
+              <SectionHelp text="Weekly updates on sales figures and occupancy levels, refreshed every Friday afternoon/Monday morning." />
+            </span>
             <div className="h-7 w-7 rounded-lg flex items-center justify-center shrink-0">
               <Trophy className="h-4 w-4 text-slate-800" />
             </div>
@@ -325,7 +350,10 @@ export default function ChannelBreakdown({
         {/* Occupancy % */}
         <div className="col-span-2 md:col-span-1 p-5 rounded-2xl bg-white border border-slate-100/80 shadow-[0_8px_30px_rgb(0,0,0,0.015)] hover:shadow-[0_12px_40px_rgba(0,0,0,0.02)] transition-all flex flex-col justify-start md:justify-between h-full">
           <div className="flex items-center justify-between w-full">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Occupancy %</span>
+            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+              Occupancy %
+              <SectionHelp text="Weekly updates on sales figures and occupancy levels, refreshed every Friday afternoon/Monday morning." />
+            </span>
             <div className="h-7 w-7 rounded-lg flex items-center justify-center shrink-0">
               <ChartPie className="h-4 w-4 text-slate-800" />
             </div>
@@ -412,9 +440,22 @@ export default function ChannelBreakdown({
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 h-full">
                 {/* Google Ads Card */}
                 <div className="p-5 rounded-2xl bg-white border border-slate-100/80 shadow-[0_8px_30px_rgb(0,0,0,0.015)] hover:shadow-[0_12px_40px_rgba(0,0,0,0.02)] transition-all flex flex-col justify-start h-full">
-                  <div className="flex items-center mb-1.5">
+                  <div className="flex items-center mb-1.5 justify-between">
                     <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
                       <img src="/logos/google-ads.png" alt="Google Ads" className="h-4 w-4 object-contain" /> Google Ads
+                      <SectionHelp text={`Paid Marketing (Google Ads) Updates daily. - A breakdown of ad performance, including: 
+
+Spend - Total advertising costs in the selected date range. 
+
+Search Impression Share (SIS) - The percentage of relevant searches where your ad appeared (we aim for 70% where budget allows though this may fluctuate by region). 
+
+Clicks - The number of times people clicked on your ads. 
+
+Impressions - How often your ads were displayed in searches.
+
+CTR (Click-Through Rate) - The percentage of people who clicked your ad after seeing it (5-6% is typical for property and education). 
+
+CPC (cost per click) - how much it costs each time a user clicks on the ad`} />
                     </span>
                   </div>
                   {googleAdsSpend === 0 ? (
@@ -457,9 +498,16 @@ export default function ChannelBreakdown({
 
                 {/* Meta Ads Card */}
                 <div className="p-5 rounded-2xl bg-white border border-slate-100/80 shadow-[0_8px_30px_rgb(0,0,0,0.015)] hover:shadow-[0_12px_40px_rgba(0,0,0,0.02)] transition-all flex flex-col justify-start h-full">
-                  <div className="flex items-center mb-1.5">
+                  <div className="flex items-center mb-1.5 justify-between">
                     <span className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
                       <img src="/logos/meta-ads.png" alt="Meta Ads" className="h-4 w-4 object-contain" /> Meta Ads
+                      <SectionHelp text={`Paid Marketing (Meta Ads) Updates daily. - A breakdown of ad performance, including:
+
+Spend - Total advertising costs in the past 30 days. 
+
+Clicks - The number of times people clicked on your ads. 
+
+Avg. CPC (average cost per click) - how much it costs each time a user clicks on the ad`} />
                     </span>
                   </div>
                   {metaAdsSpend === 0 ? (
@@ -575,15 +623,17 @@ export default function ChannelBreakdown({
               <div className="flex items-center bg-slate-50/80 p-1 rounded-lg border border-slate-100/60 shadow-sm overflow-x-auto scrollbar-hide">
                 <button
                   onClick={() => setActiveTab('firstUser')}
-                  className={`px-4 py-1.5 text-[11px] font-semibold rounded-md transition-all whitespace-nowrap shrink-0 ${activeTab === 'firstUser' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                  className={`px-4 py-1.5 text-[11px] font-semibold rounded-md transition-all whitespace-nowrap shrink-0 flex items-center gap-1.5 ${activeTab === 'firstUser' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
                 >
                   First User Acquisition
+                  <SectionHelp text="First User Acquisition - Track how new users initially discover your website, showing the acquisition channel (e.g. Organic Search, Paid Ads, Social Media, or Direct). Updates daily." />
                 </button>
                 <button
                   onClick={() => setActiveTab('searchTerms')}
-                  className={`px-4 py-1.5 text-[11px] font-semibold rounded-md transition-all whitespace-nowrap shrink-0 ${activeTab === 'searchTerms' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                  className={`px-4 py-1.5 text-[11px] font-semibold rounded-md transition-all whitespace-nowrap shrink-0 flex items-center gap-1.5 ${activeTab === 'searchTerms' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
                 >
                   Google Ads Search Terms
+                  <SectionHelp text="Search Terms - Insights into which search terms drive the most traffic to your site. Updates daily." />
                 </button>
                 <button
                   onClick={() => setActiveTab('aiTraffic')}
@@ -591,6 +641,7 @@ export default function ChannelBreakdown({
                 >
                   <Sparkles className="w-3 h-3 shrink-0" />
                   AI Traffic Overview
+                  <SectionHelp text="AI Traffic - Insights into traffic driven to your site via major artificial intelligence engines and search tools (e.g. ChatGPT, Claude, Gemini). Updates daily." />
                 </button>
               </div>
               <div className="shrink-0">
@@ -784,7 +835,10 @@ export default function ChannelBreakdown({
         <div id="users-by-day-card" className="group/card bg-white rounded-lg border border-slate-200 p-5 lg:col-span-2 relative">
           <div className="flex flex-col gap-1.5 mb-3">
             <div className="flex items-start justify-between gap-3">
-              <h3 className="text-sm font-semibold text-slate-900 mt-0.5 sm:mt-0">Users by Day of Week</h3>
+              <h3 className="text-sm font-semibold text-slate-900 mt-0.5 sm:mt-0 flex items-center gap-1.5">
+                Users by Day of Week
+                <SectionHelp text="User Behaviour - Discover the busiest days for site visits, which devices visitors use, and where they’re located. Updates daily." />
+              </h3>
               <div className="shrink-0 -mt-1 -mr-1">
                 <ExportButtonGroup
                   onExportJpeg={() => exportToJpeg('users-by-day-card', 'Users-By-Day')}
@@ -812,7 +866,10 @@ export default function ChannelBreakdown({
             <div className="flex items-start justify-between gap-3">
               <div className="flex items-start sm:items-center gap-2">
                 <Smartphone className="h-4.5 w-4.5 text-orange-655 shrink-0 mt-0.5 sm:mt-0" />
-                <h3 className="text-sm font-semibold text-slate-900 leading-tight">Views by Device</h3>
+                <h3 className="text-sm font-semibold text-slate-900 leading-tight flex items-center gap-1.5">
+                  Views by Device
+                  <SectionHelp text="User Behaviour - Discover the busiest days for site visits, which devices visitors use, and where they’re located. Updates daily." />
+                </h3>
               </div>
               <div className="shrink-0 -mt-1 -mr-1">
                 <ExportButtonGroup
