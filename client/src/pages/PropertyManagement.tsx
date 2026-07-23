@@ -5,7 +5,7 @@ import { trpc } from '../lib/trpc';
 import { Button } from '../components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../components/ui/dialog';
 import { Input } from '../components/ui/input';
-import { Plus, Edit2, Trash2, ChevronDown, Check, Settings2, Search, AlertTriangle, X, Filter, CheckCircle } from 'lucide-react';
+import { Plus, Edit2, Trash2, ChevronDown, Check, Settings2, Search, AlertTriangle, X, Filter, CheckCircle, HelpCircle } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,6 +13,7 @@ import {
   DropdownMenuTrigger,
 } from '../components/ui/dropdown-menu';
 import { toast } from 'sonner';
+import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '../components/ui/tooltip';
 
 // Generic autocomplete combobox
 function AutocompleteCombobox({
@@ -74,7 +75,7 @@ function AutocompleteCombobox({
           onFocus={() => setIsOpen(true)}
           placeholder={placeholder}
           autoComplete="off"
-          className="placeholder:text-slate-400"
+          className="placeholder:text-slate-400 text-xs sm:text-sm placeholder:text-xs"
           required={id === 'brand'}
         />
         <button
@@ -122,6 +123,96 @@ function AutocompleteCombobox({
     </div>
   );
 }
+
+// City Autocomplete (only shows dropdown when typing starts)
+function CityAutocomplete({
+  value,
+  onChange,
+  existingCities,
+  placeholder,
+  id,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  existingCities: string[];
+  placeholder: string;
+  id: string;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
+  const filtered = useMemo(() => {
+    if (!value.trim()) return [];
+    const term = value.toLowerCase();
+    return existingCities.filter((c) => c.toLowerCase().includes(term));
+  }, [value, existingCities]);
+
+  const showDropdown = isOpen && value.trim().length > 0 && filtered.length > 0;
+
+  return (
+    <div className="relative w-full" ref={wrapperRef}>
+      <Input
+        id={id}
+        value={value}
+        onChange={(e) => {
+          onChange(e.target.value);
+          setIsOpen(true);
+        }}
+        onFocus={() => setIsOpen(true)}
+        placeholder={placeholder}
+        autoComplete="off"
+        className="placeholder:text-slate-400 text-xs sm:text-sm placeholder:text-xs"
+        required
+      />
+      {showDropdown && (
+        <div className="absolute left-0 right-0 mt-1 bg-white border border-slate-200 rounded-lg shadow-lg z-50 max-h-40 overflow-y-auto py-1">
+          {filtered.map((city) => (
+            <button
+              key={city}
+              type="button"
+              onClick={() => {
+                onChange(city);
+                setIsOpen(false);
+              }}
+              className="w-full text-left px-3 py-1.5 text-xs text-slate-700 hover:bg-slate-50 transition-colors font-medium cursor-pointer"
+            >
+              {city}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Help tooltip component next to titles
+function SectionHelp({ text }: { text: string }) {
+  return (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <button type="button" className="text-slate-400 hover:text-slate-600 transition-colors focus:outline-none shrink-0 inline-flex items-center cursor-pointer">
+            <HelpCircle className="h-3.5 w-3.5" />
+          </button>
+        </TooltipTrigger>
+        <TooltipContent className="w-fit max-w-[220px] p-2.5 text-[11px] bg-slate-900 text-white rounded-lg shadow-xl border border-slate-800 leading-relaxed whitespace-pre-line z-[100]">
+          {text}
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
+}
+
 
 // Inline confirm dialog (avoids browser native confirm() clashing with shadcn Dialog)
 function DeleteConfirmDialog({
@@ -391,7 +482,7 @@ export default function PropertyManagement() {
           <div className="flex items-center gap-3">
             <div>
               <h2
-                className="text-xl font-semibold text-slate-900 tracking-tight"
+                className="text-base md:text-xl font-bold text-slate-900 tracking-tight"
                 style={{ fontFamily: 'var(--title)' }}
               >
                 Brand &amp; Property Settings
@@ -408,12 +499,12 @@ export default function PropertyManagement() {
                 <Button
                   onClick={handleOpenNew}
                   size="sm"
-                  className="bg-orange-500 hover:bg-orange-600 text-white text-xs font-semibold h-8 px-3 rounded-lg shadow-sm"
+                  className="bg-white hover:bg-slate-50 text-slate-800 border border-slate-200 text-xs font-semibold h-8 px-3 rounded-lg shadow-sm"
                 >
                   <Plus className="h-3.5 w-3.5 mr-1.5" /> Add Property
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-sm">
+              <DialogContent className="w-[calc(100%-3rem)] sm:max-w-sm">
                 <DialogHeader>
                   <DialogTitle style={{ fontFamily: 'var(--title)' }}>
                     {editingId ? 'Edit Property' : 'Add New Property'}
@@ -433,18 +524,19 @@ export default function PropertyManagement() {
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                       placeholder="e.g. Crown Place"
-                      className="placeholder:text-slate-400"
+                      className="placeholder:text-slate-400 text-xs sm:text-sm placeholder:text-xs"
                       required
                     />
                   </div>
 
                   <div className="space-y-1.5 flex-1">
                     <label
-                      className="text-xs font-semibold text-slate-600 uppercase tracking-wide"
+                      className="text-xs font-semibold text-slate-600 uppercase tracking-wide flex items-center gap-1.5"
                       htmlFor="brand"
                       style={{ fontFamily: 'var(--font)' }}
                     >
-                      Brand
+                      <span>Brand</span>
+                      <SectionHelp text="To add a brand that doesn't exist, type its name to create it. You will be prompted to customize its theme colours below." />
                     </label>
                     <AutocompleteCombobox
                       id="brand"
@@ -518,23 +610,23 @@ export default function PropertyManagement() {
                     >
                       City
                     </label>
-                    <Input
+                    <CityAutocomplete
                       id="city"
                       value={formData.city}
-                      onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                      onChange={(v) => setFormData({ ...formData, city: v })}
+                      existingCities={existingCities}
                       placeholder="e.g. Manchester"
-                      className="placeholder:text-slate-400"
-                      required
                     />
                   </div>
 
                   <div className="space-y-1.5">
                     <label
-                      className="text-xs font-semibold text-slate-600 uppercase tracking-wide"
+                      className="text-xs font-semibold text-slate-600 uppercase tracking-wide flex items-center gap-1.5"
                       htmlFor="client"
                       style={{ fontFamily: 'var(--font)' }}
                     >
-                      Client
+                      <span>Client</span>
+                      <SectionHelp text="To add a client that doesn't exist, type its name to create it." />
                     </label>
                     <AutocompleteCombobox
                       id="client"
@@ -560,7 +652,7 @@ export default function PropertyManagement() {
                       value={formData.websiteUrl}
                       onChange={(e) => setFormData({ ...formData, websiteUrl: e.target.value })}
                       placeholder="e.g. https://www.yourdomain.com/property"
-                      className="placeholder:text-slate-400"
+                      className="placeholder:text-slate-400 text-xs sm:text-sm placeholder:text-xs"
                     />
                   </div>
 
@@ -577,7 +669,7 @@ export default function PropertyManagement() {
                       value={formData.googleBusinessProfileId}
                       onChange={(e) => setFormData({ ...formData, googleBusinessProfileId: e.target.value })}
                       placeholder="e.g. accounts/123/locations/456"
-                      className="placeholder:text-slate-400"
+                      className="placeholder:text-slate-400 text-xs sm:text-sm placeholder:text-xs"
                     />
                   </div>
 
@@ -589,7 +681,7 @@ export default function PropertyManagement() {
                       type="submit"
                       size="sm"
                       disabled={createProp.isPending || updateProp.isPending}
-                      className="bg-orange-500 hover:bg-orange-600 text-white"
+                      className="bg-white hover:bg-slate-50 text-slate-800 border border-slate-200"
                     >
                       {editingId ? 'Save Changes' : 'Create Property'}
                     </Button>
@@ -610,7 +702,7 @@ export default function PropertyManagement() {
               placeholder="Filter by property, brand, or client..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 sm:pl-12 pr-10 py-2 text-sm bg-white border border-slate-200 focus:outline-none focus:border-orange-300 focus:ring-4 focus:ring-orange-500/10 rounded-xl transition-all placeholder:text-slate-400"
+              className="w-full pl-10 sm:pl-12 pr-10 py-2 text-xs sm:text-sm bg-white border border-slate-200 focus:outline-none focus:border-orange-300 focus:ring-4 focus:ring-orange-500/10 rounded-xl transition-all placeholder:text-slate-400 placeholder:text-xs sm:placeholder:text-sm"
               style={{ fontFamily: 'var(--font)' }}
             />
             {searchQuery && (
