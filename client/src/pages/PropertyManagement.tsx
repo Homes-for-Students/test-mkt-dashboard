@@ -177,7 +177,6 @@ export function getBrandBadgeClass(brand: string) {
 export default function PropertyManagement() {
   const queryClient = useQueryClient();
   const { data: properties = [], isLoading } = trpc.properties.getAll.useQuery();
-  const { data: isGoogleConnected, refetch: refetchGoogle } = trpc.analytics.getGoogleConnectionStatus.useQuery();
 
   const upsertBrandColor = trpc.brandColors.upsert.useMutation({
     onSuccess: () => {
@@ -226,17 +225,6 @@ export default function PropertyManagement() {
     googleBusinessProfileId: '',
     client: '',
   });
-
-  useEffect(() => {
-    const handleMessage = (e: MessageEvent) => {
-      if (e.data === 'google-auth-success') {
-        refetchGoogle();
-        toast.success("Google connected successfully!");
-      }
-    };
-    window.addEventListener('message', handleMessage);
-    return () => window.removeEventListener('message', handleMessage);
-  }, [refetchGoogle]);
 
   const existingBrands = useMemo(() => {
     return Array.from(new Set(properties.map((p) => p.brand).filter(Boolean))).sort();
@@ -392,17 +380,6 @@ export default function PropertyManagement() {
           </div>
 
           <div className="flex gap-2">
-            {!isGoogleConnected && (
-              <Button
-                onClick={() => window.location.href = '/api/google-auth/url'}
-                size="sm"
-                variant="outline"
-                className="text-xs font-semibold h-8 px-3 rounded-lg shadow-sm border-slate-200 text-slate-700 hover:bg-slate-50"
-              >
-                <img src="https://www.google.com/favicon.ico" className="w-3.5 h-3.5 mr-1.5 grayscale opacity-70" alt="G" />
-                Connect Google Business Profile
-              </Button>
-            )}
             <Dialog open={isOpen} onOpenChange={setIsOpen}>
               <DialogTrigger asChild>
                 <Button
@@ -628,14 +605,14 @@ export default function PropertyManagement() {
             <table className="w-full text-sm text-left whitespace-nowrap" style={{ fontFamily: 'var(--font)' }}>
               <thead>
                 <tr className="border-b border-slate-100 bg-slate-50/70">
-                  <th className="px-10 py-3.5 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                  <th className="px-6 py-3.5 text-xs font-semibold text-slate-500 uppercase tracking-wider">
                     Property Name
                   </th>
-                  <th className="px-10 py-3.5 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                  <th className="px-6 py-3.5 text-xs font-semibold text-slate-500 uppercase tracking-wider w-32">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <button className="flex items-center gap-1.5 hover:text-slate-800 transition-colors focus:outline-none">
-                          BRAND
+                           BRAND
                           <Filter className={`h-3 w-3 ${filterBrand ? 'text-orange-500 fill-orange-500' : 'text-slate-400'}`} />
                         </button>
                       </DropdownMenuTrigger>
@@ -658,7 +635,7 @@ export default function PropertyManagement() {
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </th>
-                  <th className="px-10 py-3.5 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                  <th className="px-6 py-3.5 text-xs font-semibold text-slate-500 uppercase tracking-wider w-36">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <button className="flex items-center gap-1.5 hover:text-slate-800 transition-colors focus:outline-none">
@@ -685,10 +662,10 @@ export default function PropertyManagement() {
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </th>
-                  <th className="px-10 py-3.5 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                  <th className="px-6 py-3.5 text-xs font-semibold text-slate-500 uppercase tracking-wider w-48">
                     Client
                   </th>
-                  <th className="w-1/2 px-10 py-3.5 text-xs font-semibold text-slate-500 uppercase tracking-wider text-center">
+                  <th className="px-6 py-3.5 text-xs font-semibold text-slate-500 uppercase tracking-wider text-left w-24">
                     Actions
                   </th>
                 </tr>
@@ -696,16 +673,16 @@ export default function PropertyManagement() {
               <tbody className="divide-y divide-slate-100">
                 {filteredProperties.map((prop) => (
                   <tr key={prop.id} className="hover:bg-slate-50/60 transition-colors group">
-                    <td className="px-10 py-3 font-medium text-slate-800 text-sm">{prop.name}</td>
-                    <td className="px-10 py-3">
+                    <td className="px-6 py-3 font-medium text-slate-800 text-sm">{prop.name}</td>
+                    <td className="px-6 py-3">
                       <span className={`brand-badge ${getBrandBadgeClass(prop.brand)}`}>
                         {prop.brand}
                       </span>
                     </td>
-                    <td className="px-10 py-3 text-slate-500">{prop.city}</td>
-                    <td className="px-10 py-3 text-slate-500">{(prop as any).client || '-'}</td>
-                    <td className="px-10 py-3 text-center">
-                      <div className="flex items-center justify-center gap-1">
+                    <td className="px-6 py-3 text-slate-500">{prop.city}</td>
+                    <td className="px-6 py-3 text-slate-500">{(prop as any).client || '-'}</td>
+                    <td className="px-6 py-3 text-left">
+                      <div className="flex items-center justify-start gap-1">
                         <Button
                           variant="ghost"
                           size="icon"
