@@ -62,6 +62,26 @@ export const authRouter = router({
         },
       };
     }),
+  
+  debugUsers: publicProcedure.query(async () => {
+    // This is temporary to diagnose the login failure
+    const db = await import("../db").then(m => m.getDb());
+    if (!db) {
+      return { connected: false, message: "Database is not connected. Falling back to mock." };
+    }
+    const { users } = await import("../../drizzle/schema");
+    const allUsers = await db.select().from(users);
+    return {
+      connected: true,
+      users: allUsers.map(u => ({
+        id: u.id,
+        email: u.email,
+        passwordHashLength: u.password?.length,
+        passwordHashStart: u.password?.substring(0, 10),
+        role: u.role,
+      })),
+    };
+  }),
 
   logout: publicProcedure.mutation(({ ctx }) => {
     ctx.res?.setHeader(
@@ -71,7 +91,7 @@ export const authRouter = router({
         secure: process.env.NODE_ENV === "production",
         sameSite: "lax",
         path: "/",
-        expires: new Date(0), // Expire immediately
+        maxAge: 0, 
       })
     );
     return { success: true };
