@@ -295,7 +295,7 @@ export default function DashboardHeader({
               </DropdownMenuContent>
             </DropdownMenu>
 
-            <DialogContent className="max-w-3xl rounded-xl border-slate-200 bg-white shadow-2xl p-5">
+            <DialogContent className="sm:max-w-3xl rounded-xl border-slate-200 bg-white shadow-2xl p-5">
               <DialogHeader className="border-b border-slate-100 pb-3">
                 <DialogTitle className="text-base font-bold text-slate-900">Internal user management</DialogTitle>
               </DialogHeader>
