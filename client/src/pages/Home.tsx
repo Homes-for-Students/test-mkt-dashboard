@@ -11,6 +11,7 @@ import WebsitePerformance from '@/components/WebsitePerformance';
 import ShareableLinksTab from '@/components/ShareableLinksTab';
 import PropertyManagement from '@/pages/PropertyManagement';
 import GlobalBrandStyles from '@/components/GlobalBrandStyles';
+import { useAuth } from "@/_core/hooks/useAuth";
 
 import PropertyMultiSelect from '@/components/PropertyMultiSelect';
 import BrandThemeProvider from '@/components/BrandThemeProvider';
@@ -19,7 +20,10 @@ import { trpc } from '@/lib/trpc';
 import { toast } from 'sonner';
 
 export default function Home() {
-  const { data: PROPERTIES = [] } = trpc.properties.getAll.useQuery();
+  const { user, loading } = useAuth(true);
+  const { data: PROPERTIES = [] } = trpc.properties.getAll.useQuery(undefined, {
+    enabled: !!user,
+  });
 
   const [activeTab, setActiveTab] = useState('overview');
   const [dateRange, setDateRange] = useState({
@@ -233,6 +237,14 @@ export default function Home() {
         return null;
     }
   };
+
+  if (loading || !user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+        <div className="animate-spin h-8 w-8 border-4 border-slate-300 border-t-slate-900 rounded-full" />
+      </div>
+    );
+  }
 
   return (
     <div className="h-screen flex flex-col bg-linear-to-b from-slate-50 to-slate-100/80 overflow-hidden">

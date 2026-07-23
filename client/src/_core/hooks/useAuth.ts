@@ -10,6 +10,12 @@ export function useAuth(requireAuth = true) {
     staleTime: 5 * 60 * 1000,
   });
 
+  useEffect(() => {
+    if (requireAuth && !isLoading && !user) {
+      setLocation("/login");
+    }
+  }, [requireAuth, isLoading, user, setLocation]);
+
   const logoutMutation = trpc.auth.logout.useMutation({
     onSuccess: () => {
       toast.success("Logged out successfully");
