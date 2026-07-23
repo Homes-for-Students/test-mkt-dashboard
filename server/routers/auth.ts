@@ -135,7 +135,6 @@ export const authRouter = router({
                       
                       <div style="background-color: #fff7ed; border-radius: 12px; padding: 18px; text-align: center; margin-bottom: 24px; border: 1px dashed #f58524;">
                         <span style="font-family: monospace; font-size: 32px; font-weight: 800; letter-spacing: 8px; color: #f58524; margin-left: 8px; user-select: all; -webkit-user-select: all; -moz-user-select: all; -ms-user-select: all;">${otpCode}</span>
-                        <div style="font-size: 10px; color: #a1a1aa; margin-top: 8px; font-weight: 500; letter-spacing: normal;">Double-click the code to select and copy</div>
                       </div>
                       
                       <p style="color: #94a3b8; font-size: 11px; line-height: 18px; margin-bottom: 0; border-top: 1px solid #f1f5f9; padding-top: 16px;">If you did not request this, you can safely ignore this email. Someone may have entered your email by mistake.</p>
