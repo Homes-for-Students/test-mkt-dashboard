@@ -18,7 +18,15 @@ export async function createContext(
 
   try {
     const cookies = (cookie as any).parse(opts.req.headers.cookie || "");
-    const token = cookies.auth_token;
+    let token = cookies.auth_token;
+
+    // Fallback to Bearer token in Authorization header
+    if (!token && opts.req.headers.authorization) {
+      const parts = opts.req.headers.authorization.split(" ");
+      if (parts[0] === "Bearer") {
+        token = parts[1];
+      }
+    }
 
     if (token) {
       const decoded = jwt.verify(token, JWT_SECRET) as any;

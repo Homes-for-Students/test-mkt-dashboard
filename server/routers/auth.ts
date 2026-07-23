@@ -54,6 +54,7 @@ export const authRouter = router({
 
       return {
         success: true,
+        token,
         user: {
           id: user.id,
           name: user.name,

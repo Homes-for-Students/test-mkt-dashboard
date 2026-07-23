@@ -18,6 +18,7 @@ export function useAuth(requireAuth = true) {
 
   const logoutMutation = trpc.auth.logout.useMutation({
     onSuccess: () => {
+      localStorage.removeItem("auth_token");
       toast.success("Logged out successfully");
       window.location.reload();
     },

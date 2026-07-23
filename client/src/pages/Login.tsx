@@ -11,7 +11,10 @@ export default function Login() {
   const [_, setLocation] = useLocation();
 
   const loginMutation = trpc.auth.login.useMutation({
-    onSuccess: () => {
+    onSuccess: (data) => {
+      if (data.token) {
+        localStorage.setItem("auth_token", data.token);
+      }
       window.location.href = "/";
     },
     onError: (err) => {
