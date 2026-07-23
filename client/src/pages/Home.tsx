@@ -10,6 +10,7 @@ import WebsiteSnapshot from '@/components/WebsiteSnapshot';
 import WebsitePerformance from '@/components/WebsitePerformance';
 import ShareableLinksTab from '@/components/ShareableLinksTab';
 import PropertyManagement from '@/pages/PropertyManagement';
+import GlobalBrandStyles from '@/components/GlobalBrandStyles';
 
 import PropertyMultiSelect from '@/components/PropertyMultiSelect';
 import BrandThemeProvider from '@/components/BrandThemeProvider';
@@ -227,6 +228,7 @@ export default function Home() {
             <PropertyManagement />
           </div>
         );
+
       default:
         return null;
     }

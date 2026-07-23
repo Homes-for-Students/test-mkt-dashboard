@@ -1,36 +1,39 @@
 import type { CreateExpressContextOptions } from "@trpc/server/adapters/express";
 import type { User } from "../../drizzle/schema";
-import { sdk } from "./sdk";
+import cookie from "cookie";
+import jwt from "jsonwebtoken";
+
+const JWT_SECRET = process.env.JWT_SECRET || "fallback-secret-for-local-dev-only";
 
 export type TrpcContext = {
   req: CreateExpressContextOptions["req"];
   res: CreateExpressContextOptions["res"];
-  user: User | null;
+  user: Pick<User, "id" | "email" | "name" | "role"> | null;
 };
 
 export async function createContext(
   opts: CreateExpressContextOptions
 ): Promise<TrpcContext> {
-  let user: User | null = null;
+  let user: Pick<User, "id" | "email" | "name" | "role"> | null = null;
 
   try {
-    user = await sdk.authenticateRequest(opts.req);
-  } catch (error) {
-    // Authentication is optional for public procedures.
-    user = null;
-  }
+    const cookies = (cookie as any).parse(opts.req.headers.cookie || "");
+    const token = cookies.auth_token;
 
-  // Auto-login a mock user to prevent 404 auth redirects in production
-  // (since a dedicated auth portal is not currently configured)
-  if (!user) {
-    user = {
-      id: 1,
-      name: "Admin User",
-      email: "admin@example.com",
-      role: "admin",
-      createdAt: new Date(),
-      updatedAt: new Date()
-    };
+    if (token) {
+      const decoded = jwt.verify(token, JWT_SECRET) as any;
+      if (decoded && decoded.id) {
+        user = {
+          id: decoded.id,
+          email: decoded.email,
+          name: decoded.name,
+          role: decoded.role,
+        };
+      }
+    }
+  } catch (error) {
+    // Invalid token
+    user = null;
   }
 
   return {

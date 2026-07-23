@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { publicProcedure, router } from "../_core/trpc";
+import { publicProcedure, adminProcedure, router } from "../_core/trpc";
 import { PropertyStore } from "../services/propertyStore";
 
 export const propertiesRouter = router({
@@ -15,7 +15,7 @@ export const propertiesRouter = router({
       return property;
     }),
     
-  create: publicProcedure
+  create: adminProcedure
     .input(z.object({
       name: z.string(),
       brand: z.string(),
@@ -30,7 +30,7 @@ export const propertiesRouter = router({
       return PropertyStore.add(input);
     }),
     
-  update: publicProcedure
+  update: adminProcedure
     .input(z.object({
       id: z.string(),
       name: z.string().optional(),
@@ -49,7 +49,7 @@ export const propertiesRouter = router({
       return updated;
     }),
     
-  delete: publicProcedure
+  delete: adminProcedure
     .input(z.object({ id: z.string() }))
     .mutation(({ input }) => {
       const success = PropertyStore.delete(input.id);

@@ -5,11 +5,12 @@ import { int, mysqlEnum, mysqlTable, text, timestamp, varchar, json } from "driz
  */
 export const users = mysqlTable("users", {
   id: int("id").autoincrement().primaryKey(),
-  openId: varchar("openId", { length: 64 }).notNull().unique(),
+  openId: varchar("openId", { length: 64 }).notNull().unique(), // We'll keep this for compatibility, but use email for login
+  password: varchar("password", { length: 255 }), // Hash of the user's password
   name: text("name"),
-  email: varchar("email", { length: 320 }),
-  loginMethod: varchar("loginMethod", { length: 64 }),
-  role: mysqlEnum("role", ["user", "admin"]).default("user").notNull(),
+  email: varchar("email", { length: 320 }).unique(),
+  loginMethod: varchar("loginMethod", { length: 64 }).default('local'),
+  role: mysqlEnum("role", ["viewer", "admin", "super_admin"]).default("viewer").notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
   lastSignedIn: timestamp("lastSignedIn").defaultNow().notNull(),

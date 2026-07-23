@@ -8,7 +8,9 @@ import {
   Sparkles,
   Share,
   RefreshCw,
-  Menu
+  Menu,
+  Users,
+  LogOut
 } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import PropertyMultiSelect from './PropertyMultiSelect';
@@ -25,6 +27,14 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import UserManagement from './UserManagement';
 import { toast } from 'sonner';
 
 interface DashboardHeaderProps {
@@ -62,6 +72,18 @@ export default function DashboardHeader({
 }: DashboardHeaderProps) {
   const [syncTime, setSyncTime] = useState('Just now');
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [isUserManagementOpen, setIsUserManagementOpen] = useState(false);
+
+  const { data: user } = trpc.auth.getMe.useQuery();
+  const logoutMutation = trpc.auth.logout.useMutation();
+
+  const handleLogout = () => {
+    logoutMutation.mutate(undefined, {
+      onSuccess: () => {
+        window.location.href = "/login";
+      }
+    });
+  };
 
   const queryClient = useQueryClient();
   const clearCacheMutation = trpc.analytics.clearCache.useMutation({
@@ -131,32 +153,32 @@ export default function DashboardHeader({
         {/* Client Switcher (hidden on mobile + tablet, shown lg+) */}
         {!isShared && (
           <div className="hidden lg:block">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="flex items-center gap-1.5 h-8 px-2.5 rounded-lg text-xs font-medium text-slate-600 hover:bg-slate-50">
-                <span className="font-semibold text-slate-800">{displayBrandName}</span>
-                <ChevronDown className="h-3 w-3 text-slate-400" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-56 rounded-xl border-slate-100 p-1.5 max-h-64 overflow-y-auto">
-              {brandsList.map((brand) => {
-                const config = Object.values(brandColors).find(c => c.brand === brand);
-                const label = config?.fullName || brand;
-                return (
-                  <DropdownMenuItem
-                    key={brand}
-                    onClick={() => {
-                      onBrandChange?.(brand);
-                      toast.success(`Switched to ${label}`);
-                    }}
-                    className={`rounded-lg text-xs ${selectedBrand === brand ? 'bg-slate-50 font-medium text-blue-600' : ''}`}
-                  >
-                    {label}
-                  </DropdownMenuItem>
-                );
-              })}
-            </DropdownMenuContent>
-          </DropdownMenu>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="flex items-center gap-1.5 h-8 px-2.5 rounded-md text-xs font-medium text-slate-600 hover:bg-slate-50">
+                  <span className="font-semibold text-slate-800">{displayBrandName}</span>
+                  <ChevronDown className="h-3 w-3 text-slate-400" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-56 rounded-md border-slate-100 p-1.5 max-h-64 overflow-y-auto shadow-md">
+                {brandsList.map((brand) => {
+                  const config = Object.values(brandColors).find(c => c.brand === brand);
+                  const label = config?.fullName || brand;
+                  return (
+                    <DropdownMenuItem
+                      key={brand}
+                      onClick={() => {
+                        onBrandChange?.(brand);
+                        toast.success(`Switched to ${label}`);
+                      }}
+                      className={`rounded-lg text-xs ${selectedBrand === brand ? 'bg-slate-50 font-medium text-blue-600' : ''}`}
+                    >
+                      {label}
+                    </DropdownMenuItem>
+                  );
+                })}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         )}
       </div>
@@ -233,6 +255,55 @@ export default function DashboardHeader({
           >
             <RefreshCw className={`h-3.5 w-3.5 ${clearCacheMutation.isPending || isLoadingAnalytics ? 'animate-spin text-blue-500' : ''}`} />
           </Button>
+        )}
+
+        {/* User Profile & Actions (Dropdown + Modal) */}
+        {!isShared && user && (
+          <Dialog open={isUserManagementOpen} onOpenChange={setIsUserManagementOpen}>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="flex items-center gap-2 h-9 px-3 rounded-md border border-slate-200 bg-white hover:bg-slate-50">
+                  <div className="w-5 h-5 rounded-full bg-slate-100 flex items-center justify-center text-xs font-semibold text-slate-700 uppercase">
+                    {user.name?.[0] || user.email?.[0] || 'U'}
+                  </div>
+                  <span className="hidden md:inline text-xs font-medium text-slate-700 truncate max-w-[100px]">
+                    {user.name || user.email}
+                  </span>
+                  <ChevronDown className="h-3 w-3 text-slate-400" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56 rounded-md border-slate-100 p-1.5 shadow-md">
+                <div className="px-2 py-1.5 border-b border-slate-100 mb-1">
+                  <p className="text-xs font-semibold text-slate-800 truncate">{user.name || user.email}</p>
+                  <p className="text-[10px] text-slate-400 capitalize">{user.role?.replace('_', ' ')}</p>
+                </div>
+                {user.role === 'super_admin' && (
+                  <DialogTrigger asChild>
+                    <DropdownMenuItem className="rounded-lg text-xs flex items-center gap-2 cursor-pointer">
+                      <Users className="h-3.5 w-3.5 text-slate-500" />
+                      <span>Manage Users</span>
+                    </DropdownMenuItem>
+                  </DialogTrigger>
+                )}
+                <DropdownMenuItem
+                  onClick={handleLogout}
+                  className="rounded-lg text-xs text-red-600 hover:text-red-700 hover:bg-red-50 flex items-center gap-2 cursor-pointer"
+                >
+                  <LogOut className="h-3.5 w-3.5" />
+                  <span>Sign Out</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            <DialogContent className="max-w-3xl rounded-xl border-slate-200 bg-white shadow-2xl p-5">
+              <DialogHeader className="border-b border-slate-100 pb-3">
+                <DialogTitle className="text-base font-bold text-slate-900">Internal user management</DialogTitle>
+              </DialogHeader>
+              <div className="">
+                <UserManagement />
+              </div>
+            </DialogContent>
+          </Dialog>
         )}
       </div>
 

@@ -8,6 +8,7 @@ import Home from "./pages/Home";
 import SharedDashboard from "./pages/SharedDashboard";
 import PropertyManagement from "./pages/PropertyManagement";
 import GlobalBrandStyles from "./components/GlobalBrandStyles";
+import Login from "./pages/Login";
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -15,6 +16,7 @@ function Router() {
   return (
     <Switch>
       <Route path={"/"} component={Home} />
+      <Route path={"/login"} component={Login} />
       <Route path={"/properties"} component={PropertyManagement} />
       <Route path={"/share/:token"} component={SharedDashboard} />
       <Route path={"/404"} component={NotFound} />

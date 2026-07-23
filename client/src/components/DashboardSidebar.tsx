@@ -24,6 +24,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { trpc } from "@/lib/trpc";
 
 interface DashboardSidebarProps {
   activeTab: string;
@@ -51,6 +52,16 @@ export default function DashboardSidebar({
   onMobileClose,
 }: DashboardSidebarProps) {
   const [isIntegrationsOpen, setIsIntegrationsOpen] = useState(true);
+  const { data: user } = trpc.auth.getMe.useQuery();
+  const logoutMutation = trpc.auth.logout.useMutation();
+
+  const handleLogout = () => {
+    logoutMutation.mutate(undefined, {
+      onSuccess: () => {
+        window.location.href = "/login";
+      }
+    });
+  };
 
   const hasIntegrationError = INTEGRATION_STATUS.some(s => s.status !== 'Connected');
 
@@ -83,9 +94,9 @@ export default function DashboardSidebar({
     { id: 'overview', label: 'Portfolio overview', icon: LayoutDashboard },
     { id: 'campaigns', label: 'Search performance', icon: Search },
     { id: 'ga4', label: 'Website performance', icon: BarChart3 },
-    ...(!isShared ? [{ id: 'shared-links', label: 'Shared links', icon: LinkIcon }] : []),
+    ...(!isShared && user?.role !== 'viewer' ? [{ id: 'shared-links', label: 'Shared links', icon: LinkIcon }] : []),
     { id: 'divider-settings', label: 'Settings', type: 'divider' },
-    { id: 'properties', label: 'Property management', icon: Building },
+    ...(user?.role !== 'viewer' ? [{ id: 'properties', label: 'Property management', icon: Building }] : []),
   ];
 
   const navContent = (collapsed: boolean) => (
@@ -158,7 +169,7 @@ export default function DashboardSidebar({
       {/* Bottom Section */}
       <div className="mt-auto flex flex-col">
         {/* Toggle Button (desktop only) */}
-        <div className="px-2 mb-2 hidden lg:block">
+        <div className="px-2 mb-10 hidden lg:block">
           <button
             onClick={toggleCollapse}
             className={`w-full flex items-center rounded-xl text-xs font-medium transition-all duration-200 text-slate-500 hover:bg-slate-200/50 hover:text-slate-900 ${collapsed ? 'justify-center p-2' : 'justify-start px-3 py-2.5 gap-2.5'}`}
@@ -167,48 +178,6 @@ export default function DashboardSidebar({
             {collapsed ? <PanelLeftOpen className="h-4 w-4 shrink-0" /> : <PanelLeftClose className="h-4 w-4 shrink-0" />}
             {!collapsed && <span className="truncate">Close sidebar</span>}
           </button>
-        </div>
-
-        {/* Help & Support Footer */}
-        <div className="px-4 py-6 border-t border-slate-200/60 bg-slate-100/30 text-center flex flex-col items-center justify-center">
-          {collapsed ? (
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <button
-                    onClick={() => {
-                      navigator.clipboard.writeText('marketing@pbsa.co.uk');
-                      toast.success('Email copied to clipboard!');
-                    }}
-                    className="p-2 rounded-xl bg-white shadow-sm border border-slate-200/60 hover:bg-slate-50 text-slate-500 hover:text-slate-700 transition-colors"
-                  >
-                    <HelpCircle className="h-4 w-4 shrink-0" />
-                  </button>
-                </TooltipTrigger>
-                <TooltipContent side="right">
-                  <p className="text-xs font-bold">Need help?</p>
-                  <p className="text-[10px] text-slate-400">Copy support email</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          ) : (
-            <>
-              <div className="flex items-center gap-1.5 text-[11px] font-medium text-slate-600">
-                <HelpCircle className="h-3.5 w-3.5 shrink-0" />
-                <span className="truncate">Need help?</span>
-              </div>
-              <button
-                onClick={() => {
-                  navigator.clipboard.writeText('marketing@pbsa.co.uk');
-                  toast.success('Email copied to clipboard!');
-                }}
-                className="mt-1 text-[10px] text-blue-600 font-semibold hover:underline cursor-pointer"
-                title="Click to copy email address"
-              >
-                Contact Digital Marketing team
-              </button>
-            </>
-          )}
         </div>
       </div>
     </>

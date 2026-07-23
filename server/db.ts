@@ -37,7 +37,7 @@ export async function upsertUser(user: InsertUser): Promise<void> {
     };
     const updateSet: Record<string, unknown> = {};
 
-    const textFields = ["name", "email", "loginMethod"] as const;
+    const textFields = ["name", "email", "loginMethod", "password"] as const;
     type TextField = (typeof textFields)[number];
 
     const assignNullable = (field: TextField) => {
@@ -58,8 +58,8 @@ export async function upsertUser(user: InsertUser): Promise<void> {
       values.role = user.role;
       updateSet.role = user.role;
     } else if (user.openId === ENV.ownerOpenId) {
-      values.role = 'admin';
-      updateSet.role = 'admin';
+      values.role = 'super_admin';
+      updateSet.role = 'super_admin';
     }
 
     if (!values.lastSignedIn) {
@@ -87,9 +87,11 @@ export async function getUserByOpenId(openId: string) {
     return {
       id: 1,
       openId,
+      password: null,
       name: "Local Dev User",
       email: "dev@example.com",
-      role: "admin",
+      loginMethod: 'local',
+      role: "super_admin" as const,
       createdAt: new Date(),
       updatedAt: new Date(),
       lastSignedIn: new Date()
@@ -98,6 +100,29 @@ export async function getUserByOpenId(openId: string) {
 
   const result = await db.select().from(users).where(eq(users.openId, openId)).limit(1);
 
+  return result.length > 0 ? result[0] : undefined;
+}
+
+export async function getUserByEmail(email: string) {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot get user by email: database not available");
+    // For local dev, allow any email to login as super_admin
+    return {
+      id: 1,
+      openId: `mock-${email}`,
+      password: "$2b$10$qMLNYRrTe.KrBBi5.Xds8uxodhYwtlgis3i8Yj9GEzaO4F841evNq", // Hash for 'password123'
+      name: "Local Mock User",
+      email: email,
+      loginMethod: 'local',
+      role: "super_admin" as const,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      lastSignedIn: new Date()
+    };
+  }
+
+  const result = await db.select().from(users).where(eq(users.email, email)).limit(1);
   return result.length > 0 ? result[0] : undefined;
 }
 

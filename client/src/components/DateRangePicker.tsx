@@ -89,8 +89,8 @@ export function DateRangePicker({
           Desktop: side-by-side (flex-row), full two-month layout.
         */}
         <PopoverContent
-          className="p-0 flex flex-col sm:flex-row bg-white border-slate-200 shadow-xl rounded-xl overflow-hidden"
-          style={{ width: 'min(calc(100vw - 2rem), 560px)' }}
+          className="ml-5 p-0 flex flex-col sm:flex-row bg-white border-slate-200 shadow-xl rounded-xl overflow-hidden"
+          style={{ width: 'min(calc(100vw - 2rem), 600px)' }}
           align="end"
           sideOffset={8}
         >

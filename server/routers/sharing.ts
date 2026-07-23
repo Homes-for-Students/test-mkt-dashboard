@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { publicProcedure, protectedProcedure, router } from "../_core/trpc";
+import { publicProcedure, protectedProcedure, adminProcedure, router } from "../_core/trpc";
 import { nanoid } from "nanoid";
 import {
   createShareableToken,
@@ -18,7 +18,7 @@ export const sharingRouter = router({
    * Create a shareable link for the current dashboard view.
    * Generates a secure token and returns a shareable URL.
    */
-  createShareableLink: protectedProcedure
+  createShareableLink: adminProcedure
     .input(
       z.object({
         selectedPropertyIds: z.array(z.string()),
@@ -178,7 +178,7 @@ export const sharingRouter = router({
   /**
    * Delete a shareable link by its ID.
    */
-  deleteShareableLink: protectedProcedure
+  deleteShareableLink: adminProcedure
     .input(z.object({ tokenId: z.number() }))
     .mutation(async ({ ctx, input }) => {
       try {
@@ -205,7 +205,7 @@ export const sharingRouter = router({
   /**
    * Update the access list (allowed domains) for a shareable link.
    */
-  updateLinkAccess: protectedProcedure
+  updateLinkAccess: adminProcedure
     .input(z.object({ tokenId: z.number(), allowedDomains: z.array(z.string()) }))
     .mutation(async ({ ctx, input }) => {
       try {

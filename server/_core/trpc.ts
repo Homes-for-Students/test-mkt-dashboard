@@ -10,36 +10,36 @@ const t = initTRPC.context<TrpcContext>().create({
 export const router = t.router;
 export const publicProcedure = t.procedure;
 
-const requireUser = t.middleware(async opts => {
+const requireViewer = t.middleware(async opts => {
   const { ctx, next } = opts;
-
   if (!ctx.user) {
     throw new TRPCError({ code: "UNAUTHORIZED", message: UNAUTHED_ERR_MSG });
   }
-
-  return next({
-    ctx: {
-      ...ctx,
-      user: ctx.user,
-    },
-  });
+  return next({ ctx: { ...ctx, user: ctx.user } });
 });
 
-export const protectedProcedure = t.procedure.use(requireUser);
+const requireAdmin = t.middleware(async opts => {
+  const { ctx, next } = opts;
+  if (!ctx.user || (ctx.user.role !== 'admin' && ctx.user.role !== 'super_admin')) {
+    throw new TRPCError({ code: "FORBIDDEN", message: "You must be an admin to perform this action." });
+  }
+  return next({ ctx: { ...ctx, user: ctx.user } });
+});
 
-export const adminProcedure = t.procedure.use(
-  t.middleware(async opts => {
-    const { ctx, next } = opts;
+const requireSuperAdmin = t.middleware(async opts => {
+  const { ctx, next } = opts;
+  if (!ctx.user || ctx.user.role !== 'super_admin') {
+    throw new TRPCError({ code: "FORBIDDEN", message: "You must be a super admin to perform this action." });
+  }
+  return next({ ctx: { ...ctx, user: ctx.user } });
+});
 
-    if (!ctx.user || ctx.user.role !== 'admin') {
-      throw new TRPCError({ code: "FORBIDDEN", message: NOT_ADMIN_ERR_MSG });
-    }
+// Any logged in user (viewer, admin, super_admin)
+export const protectedProcedure = t.procedure.use(requireViewer);
+export const viewerProcedure = t.procedure.use(requireViewer);
 
-    return next({
-      ctx: {
-        ...ctx,
-        user: ctx.user,
-      },
-    });
-  }),
-);
+// Admin or Super Admin only
+export const adminProcedure = t.procedure.use(requireAdmin);
+
+// Super Admin only
+export const superAdminProcedure = t.procedure.use(requireSuperAdmin);
