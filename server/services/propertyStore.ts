@@ -19,6 +19,8 @@ export interface Property {
   googleBusinessProfileId?: string;
   studentCrowdId?: string;
   client?: string;
+  lat?: number;
+  lng?: number;
 }
 
 export class PropertyStore {

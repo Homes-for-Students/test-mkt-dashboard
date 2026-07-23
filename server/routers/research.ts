@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { router, protectedProcedure } from "../_core/trpc";
+import { router, protectedProcedure, publicProcedure } from "../_core/trpc";
 import { TRPCError } from "@trpc/server";
 import { PropertyStore } from "../services/propertyStore";
 import { makeRequest, PlaceDetailsResult } from "../_core/map";
@@ -15,6 +15,10 @@ async function getCoordinates(propertyId: string) {
 
   const db = await getDb();
   
+  if (property.lat && property.lng) {
+    return { lat: property.lat, lng: property.lng };
+  }
+
   if (property.studentCrowdId) {
     const cacheKey = `geocode:sc:${property.studentCrowdId}`;
     if (db) {
@@ -71,6 +75,7 @@ async function getCoordinates(propertyId: string) {
     place_id: property.googleMapsPlaceId,
     fields: "geometry"
   });
+  console.log("[Geocode Proxy] Res:", res);
 
   const location = res.result?.geometry?.location;
   if (!location) {

@@ -1482,7 +1482,9 @@
     "ga4PagePath": "/accommodation/sheffield/loxley-heights",
     "websiteUrl": "https://wearecityliving.com/accommodation/sheffield/loxley-heights",
     "googleBusinessProfileId": "accounts/104909658589811140343/locations/3851355778646039009",
-    "client": "Corebridge"
+    "client": "Corebridge",
+    "lat": 53.3823872,
+    "lng": -1.4761214
   },
   {
     "id": "prop-1783605396892-106",
