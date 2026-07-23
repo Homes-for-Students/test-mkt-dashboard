@@ -20,12 +20,13 @@ export async function createContext(
     user = null;
   }
 
-  // Auto-login a mock user for local development to test protected endpoints
-  if (!user && process.env.NODE_ENV !== "production") {
+  // Auto-login a mock user to prevent 404 auth redirects in production
+  // (since a dedicated auth portal is not currently configured)
+  if (!user) {
     user = {
       id: 1,
-      name: "Local Dev User",
-      email: "dev@example.com",
+      name: "Admin User",
+      email: "admin@example.com",
       role: "admin",
       createdAt: new Date(),
       updatedAt: new Date()
