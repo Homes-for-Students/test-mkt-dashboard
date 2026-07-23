@@ -5,6 +5,7 @@ import { getUserByEmail } from "../db";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import cookie from "cookie";
+import { eq } from "drizzle-orm";
 
 const JWT_SECRET = process.env.JWT_SECRET || "fallback-secret-for-local-dev-only";
 
@@ -35,7 +36,7 @@ export const authRouter = router({
 
       // Generate JWT Token
       const token = jwt.sign(
-        { id: user.id, email: user.email, role: user.role },
+        { id: user.id, email: user.email, name: user.name, role: user.role },
         JWT_SECRET,
         { expiresIn: "7d" }
       );
@@ -61,6 +62,106 @@ export const authRouter = router({
           email: user.email,
           role: user.role,
         },
+      };
+    }),
+
+  requestOtp: publicProcedure
+    .input(
+      z.object({
+        email: z.string().email().trim(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      const user = await getUserByEmail(input.email);
+      
+      if (!user) {
+        // Return success anyway to prevent email enumeration
+        return { success: true };
+      }
+
+      const db = await import("../db").then(m => m.getDb());
+      if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not connected" });
+      const { users } = await import("../../drizzle/schema");
+      
+      // Generate 6 digit code
+      const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+      const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+      const hashedOtp = await bcrypt.hash(otpCode, 10);
+
+      await db.update(users)
+        .set({ otpCode: hashedOtp, otpExpiresAt: expiresAt })
+        .where(eq(users.id, user.id));
+
+      try {
+        const mailerUrl = "https://hfs-mailer.marketingenquiries.workers.dev";
+        const res = await fetch(mailerUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: user.email, otpCode })
+        });
+        
+        if (!res.ok) {
+          console.error("Failed to send email via Cloudflare worker", await res.text());
+        }
+      } catch (err) {
+        console.error("Error calling mailer", err);
+      }
+
+      return { success: true };
+    }),
+
+  verifyOtp: publicProcedure
+    .input(
+      z.object({
+        email: z.string().email().trim(),
+        code: z.string().length(6),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const user = await getUserByEmail(input.email);
+
+      if (!user || !user.otpCode || !user.otpExpiresAt) {
+        throw new TRPCError({ code: "UNAUTHORIZED", message: "Invalid or expired passcode" });
+      }
+
+      if (new Date() > user.otpExpiresAt) {
+        throw new TRPCError({ code: "UNAUTHORIZED", message: "Passcode has expired" });
+      }
+
+      const isValid = await bcrypt.compare(input.code, user.otpCode);
+      if (!isValid) {
+        throw new TRPCError({ code: "UNAUTHORIZED", message: "Invalid passcode" });
+      }
+
+      const db = await import("../db").then(m => m.getDb());
+      if (db) {
+        const { users } = await import("../../drizzle/schema");
+        await db.update(users)
+          .set({ otpCode: null, otpExpiresAt: null, lastSignedIn: new Date() })
+          .where(eq(users.id, user.id));
+      }
+
+      const token = jwt.sign(
+        { id: user.id, email: user.email, name: user.name, role: user.role },
+        JWT_SECRET,
+        { expiresIn: "7d" }
+      );
+
+      ctx.res?.setHeader(
+        "Set-Cookie",
+        (cookie as any).serialize("auth_token", token, {
+          httpOnly: true,
+          secure: true,
+          sameSite: "none",
+          path: "/",
+          maxAge: 60 * 60 * 24 * 7,
+        })
+      );
+
+      return {
+        success: true,
+        token,
+        user: { id: user.id, name: user.name, email: user.email, role: user.role },
       };
     }),
   

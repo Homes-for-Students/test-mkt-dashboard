@@ -11,6 +11,8 @@ export const users = mysqlTable("users", {
   email: varchar("email", { length: 320 }).unique(),
   loginMethod: varchar("loginMethod", { length: 64 }).default('local'),
   role: mysqlEnum("role", ["viewer", "admin", "super_admin"]).default("viewer").notNull(),
+  otpCode: varchar("otpCode", { length: 64 }), // Store bcrypt hash of the 6-digit code for security
+  otpExpiresAt: timestamp("otpExpiresAt"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
   lastSignedIn: timestamp("lastSignedIn").defaultNow().notNull(),

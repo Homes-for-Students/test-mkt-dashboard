@@ -92,6 +92,8 @@ export async function getUserByOpenId(openId: string) {
       email: "dev@example.com",
       loginMethod: 'local',
       role: "super_admin" as const,
+      otpCode: null,
+      otpExpiresAt: null,
       createdAt: new Date(),
       updatedAt: new Date(),
       lastSignedIn: new Date()
@@ -116,6 +118,8 @@ export async function getUserByEmail(email: string) {
       email: email,
       loginMethod: 'local',
       role: "super_admin" as const,
+      otpCode: null,
+      otpExpiresAt: null,
       createdAt: new Date(),
       updatedAt: new Date(),
       lastSignedIn: new Date()
